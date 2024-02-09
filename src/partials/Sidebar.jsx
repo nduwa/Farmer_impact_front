@@ -203,7 +203,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               />
                             </svg>
                             <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                              Dashboard
+                              Sidebar Link 1
                             </span>
                           </div>
                           {/* Icon */}
@@ -233,7 +233,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               }
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Main
+                                sub link 1
                               </span>
                             </NavLink>
                           </li>
@@ -249,7 +249,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               }
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Analytics
+                                sub link 1
                               </span>
                             </NavLink>
                           </li>
@@ -265,7 +265,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               }
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Fintech
+                                sub link 2
                               </span>
                             </NavLink>
                           </li>
@@ -324,7 +324,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               />
                             </svg>
                             <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                              Authentication
+                              Extra sidebar link
                             </span>
                           </div>
                           {/* Icon */}
@@ -349,7 +349,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               className="block text-slate-400 hover:text-slate-200 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Sign in
+                                sub link 1
                               </span>
                             </NavLink>
                           </li>
@@ -360,7 +360,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               className="block text-slate-400 hover:text-slate-200 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Sign up
+                                sub link 2
                               </span>
                             </NavLink>
                           </li>
@@ -371,7 +371,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               className="block text-slate-400 hover:text-slate-200 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Reset Password
+                                sub link 3
                               </span>
                             </NavLink>
                           </li>
