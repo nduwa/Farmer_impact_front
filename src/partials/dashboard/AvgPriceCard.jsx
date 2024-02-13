@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LineChart from '../../charts/LineChart01';
-import Icon from '../../images/icon-03.svg';
+import Icon from '../../images/icon-02.svg';
 import EditMenu from '../../components/DropdownEditMenu';
 
 // Import utilities
 import { tailwindConfig, hexToRGB } from '../../utils/Utils';
 
-function DashboardCard03() {
+function AvgPriceCard() {
 
 
 
@@ -16,7 +16,7 @@ function DashboardCard03() {
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
           {/* Icon */}
-          <img src={Icon} width="32" height="32" alt="Icon 03" />
+          <img src={Icon} width="32" height="32" alt="Icon 02" />
           {/* Menu button */}
           <EditMenu align="right" className="relative inline-flex">
             <li>
@@ -36,36 +36,66 @@ function DashboardCard03() {
             </li>
           </EditMenu>
         </header>
+        {/* <div className='flex flex-row text-xs font-semibold gap-3 mb-3  '>
+        <div className='flex flex-col gap-5'>
+         <h2>TOTAL CHERRY PURCHASES (KG)</h2>
+         <ul className='flex flex-col gap-5'>
+          <li>
+            <a href="">Certified</a>
+          </li>
+          <li>
+            <a href="">Certified</a>
+          </li>
+          <li>
+            <a href="">Certified</a>
+          </li>
+          <li>
+            <a href="">Certified</a>
+          </li>
+         </ul>
+         </div>
+        <div>
+          <h2> 15,017,194 KG </h2>
+          <ul>
+            <li>
+            9,934,926
+            </li>
+            <li>
+            9,934,926
+            </li>
+            <li>
+            9,934,926
+            </li>
+            <li>
+            9,934,926
+            </li>
+          </ul>
+          </div>
+        </div> */}
         <div>
           <div className='flex flex-row justify-between text-[12px] mb-4'>
-            <label className=''>TOTAL CHERRY PURCHASES (KG)</label>
-            <label>15,017,194KG</label>
+            <label className=''>YTD AVG PRICE @ CWS TODAY</label>
+          
           
           </div>
           <hr></hr>
         
           <div className='flex flex-row justify-between text-[12px] mt-4 mb-2'>
-            <label className=''>Certified</label>
-            <label>9,934,926 Kg</label>
+            <label className=''>Good Cherry :</label>
+            <label>0
+
+RWF/PER KG</label>
           </div>
-          <div className='flex flex-row justify-between text-[12px] mb-2'>
-            <label className=''>Traceable unCertified</label>
-            <label>9,934,926 Kg</label>
-          </div>
-          <div className='flex flex-row justify-between text-[12px] mb-2'>
-            <label className=''>Uncertified Untraceable</label>
-            <label>9,934,926 Kg</label>
-          </div>
-          <div className='flex flex-row justify-between text-[12px] mb-2'>
-            <label className=''>Floaters</label>
-            <label>9,934,926 Kg</label>
-          </div>
+       
+         
+         
         </div>
+       
       </div>
       {/* Chart built with Chart.js 3 */}
-
+  
     </div>
   );
 }
 
-export default DashboardCard03;
+export default AvgPriceCard;
