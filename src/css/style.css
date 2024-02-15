@@ -8,3 +8,64 @@
 @import 'additional-styles/flatpickr.css';
 
 @import 'tailwindcss/utilities';
+
+
+
+/* CONTACT PAGE */
+.contact-cont {
+    display: flex;
+    justify-content: center;
+ 
+  }
+  .contact-cont .p-infor{
+    display: grid;
+    grid-template-columns: 50% 50%;
+
+  }
+  
+  .p-infor img{
+    width: 400px;
+    height: 500px;
+    margin-bottom: 10rem;
+    margin-top: 8rem;
+  }
+  .emp-info{
+    background-color: white;
+    width: 400px;
+    height: 500px;
+    margin-bottom: 10rem;
+    margin-top: 8rem;
+ 
+  }
+  
+  .emp-info form{
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   gap: 30px;
+   margin-left: 2rem;
+   margin-top: 9rem; 
+   
+  }
+  .emp-info input{
+    width: 350px;
+    height: 50px;
+    border-radius: 20px;
+    padding-left: 1rem ;
+    
+  }
+  
+  .emp-info button{
+    width: 350px;
+    height: 50px;
+    border-radius: 20px;
+    color: white;
+    background-color: #f69a00;
+    padding-left: 1rem ;
+    margin-top: -1rem;
+  
+  }
+  
+  /*====================MEDIA QUERIES(STUBBORN SMALL DEVICES)==================*/
+  @media screen and (max-width: 575px) {
+}
