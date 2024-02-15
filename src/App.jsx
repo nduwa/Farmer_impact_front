@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import UserSupplyInventoryDetails from './pages/UserSupplyInventoryDetails';
 import UserTransactions from './pages/UserTransactions';
 import CwsDailyJournal from './pages/CwsDailyJournal';
+import LoginPage from './pages/LoginPage';
 
 
 function App() {
@@ -29,10 +30,12 @@ function App() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<Dashboard />} />
+        <Route exact path="/dashboard" element={<Dashboard />} />
+    
         <Route exact path="/user_supply_inventory_details" element={<UserSupplyInventoryDetails />} />
         <Route exact path="/user_transactions" element={<UserTransactions />} />
         <Route exact path="/user_transaction/cws-daily-journals" element={<CwsDailyJournal />} />
+        <Route exact path="/" element={<LoginPage />} />
       </Routes>
     </>
   );
