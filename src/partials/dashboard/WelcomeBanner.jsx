@@ -1,6 +1,13 @@
 import React from 'react';
+// import {login} from '../../redux/actions/AuthAction'
+// import { useDispatch, useSelector } from "react-redux";
 
 function WelcomeBanner() {
+
+//   const { user, loading } = useSelector((state) => state.login || {});
+// console.log("usesrs",user)
+
+
   return (
     <div className="relative bg-indigo-200 dark:bg-indigo-500 p-4 sm:p-6 rounded-sm overflow-hidden mb-8">
       {/* Background illustration */}

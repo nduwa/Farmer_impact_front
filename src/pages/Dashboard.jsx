@@ -61,7 +61,7 @@ function Dashboard() {
               <FarmerPriceCard/>
              
               {/* Doughnut chart (Top Countries) */}
-              <DashboardCard06 />
+              {/* <DashboardCard06 /> */}
             
             </div>
           </div>
