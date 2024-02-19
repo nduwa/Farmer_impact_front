@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import logo from '../images/logo.jpg'
+
 
 import SidebarLinkGroup from "./SidebarLinkGroup";
 
@@ -64,7 +66,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
       <div
         id="sidebar"
         ref={sidebar}
-        className={`flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 lg:w-20 lg:sidebar-expanded:!w-64 2xl:!w-64 shrink-0 bg-slate-800 p-4 transition-all duration-200 ease-in-out ${
+        className={`flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 lg:w-20 lg:sidebar-expanded:!w-64 2xl:!w-64 shrink-0 bg-[#000000] p-4 transition-all duration-200 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-64"
         }`}
       >
@@ -89,7 +91,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           </button>
           {/* Logo */}
           <NavLink end to="/" className="block">
-            <svg width="32" height="32" viewBox="0 0 32 32">
+            {/* <svg width="32" height="32" viewBox="0 0 32 32">
               <defs>
                 <linearGradient
                   x1="28.538%"
@@ -125,7 +127,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 d="M2.223 24.14L29.777 7.86A15.926 15.926 0 0132 16c0 8.837-7.163 16-16 16-5.864 0-10.991-3.154-13.777-7.86z"
                 fill="url(#logo-b)"
               />
-            </svg>
+            </svg> */}
+            <img src={logo} height={75} width={75} alt="logo" />
           </NavLink>
         </div>
 
