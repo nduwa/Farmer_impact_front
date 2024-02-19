@@ -7,7 +7,6 @@ import DashboardCard01 from "../partials/dashboard/DashboardCard01";
 import DashboardCard02 from "../partials/dashboard/DashboardCard02";
 import DashboardCard03 from "../partials/dashboard/DashboardCard03";
 import AvgPriceCard from "../partials/dashboard/AvgPriceCard";
-import DashboardCard06 from "../partials/dashboard/DashboardCard06";
 import ApprovedPriceCard from "../partials/dashboard/ApprovedPriceCard";
 import FarmerPriceCard from "../partials/dashboard/FarmerPriceCard";
 
@@ -26,25 +25,19 @@ function Dashboard() {
 
         <main>
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-           
-
             {/* Dashboard actions */}
             <div className="sm:flex sm:justify-between sm:items-center mb-8">
               {/* Right: Actions */}
               <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-              
                 <FilterButton />
-                
-                <NavLink   
-                    end
-                    to="/user_supply_inventory_details">
-                       <button className="btn bg-indigo-500 hover:bg-indigo-600 text-white">
-                       <span className="hidden xs:block ml-2">See supply Inventory Detail</span>
-                     </button>   
 
+                <NavLink end to="/user_supply_inventory_details">
+                  <button className="btn bg-secondary hover:bg-secondary_variant text-white">
+                    <span className="hidden xs:block ml-2">
+                      See supply Inventory Detail
+                    </span>
+                  </button>
                 </NavLink>
-              
-              
               </div>
             </div>
 
@@ -57,12 +50,11 @@ function Dashboard() {
               {/* Line chart (Acme Professional) */}
               <DashboardCard03 />
               <AvgPriceCard />
-              <ApprovedPriceCard/>
-              <FarmerPriceCard/>
-             
+              <ApprovedPriceCard />
+              <FarmerPriceCard />
+
               {/* Doughnut chart (Top Countries) */}
               {/* <DashboardCard06 /> */}
-            
             </div>
           </div>
         </main>
