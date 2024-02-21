@@ -1,10 +1,7 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable prefer-promise-reject-errors */
+
 import axios from 'axios';
 
-
 const url = "http://localhost:5000";
-
 
 export const Userlogin = (userData) => {
 	return new Promise((resolve, reject) => {
@@ -18,5 +15,18 @@ export const Userlogin = (userData) => {
 				reject(error);
 			});
 	});
+};
+
+
+export const allUsers = async () => {
+  try {
+    const response = await axios.get(`${url}/user/allUsers`, {});
+    return response.data;
+  } catch (error) {
+    if (error.response.data !== undefined) {
+      throw error.response.data;
+    }
+    throw error;
+  }
 };
 
