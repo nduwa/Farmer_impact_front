@@ -254,7 +254,7 @@ const UsersTable = () => {
             </span>{" "}
             -{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {Math.min(currentPage * itemsPerPage, allUsers.length)}
+              {Math.min(currentPage * itemsPerPage, allUsers?.length)}
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">

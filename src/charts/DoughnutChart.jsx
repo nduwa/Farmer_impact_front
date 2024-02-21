@@ -28,6 +28,7 @@ function DoughnutChart({
   useEffect(() => {
     const ctx = canvas.current;
     // eslint-disable-next-line no-unused-vars
+    console.log(data)
     const newChart = new Chart(ctx, {
       type: 'doughnut',
       data: data,
