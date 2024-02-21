@@ -1,13 +1,32 @@
-import React from 'react';
-// import {login} from '../../redux/actions/AuthAction'
-// import { useDispatch, useSelector } from "react-redux";
+import React , {useEffect,useState} from 'react';
+import {login} from '../../redux/actions/AuthAction'
+import { useDispatch, useSelector } from "react-redux";
+import { handleToken } from '../../redux/actions/fetchTokenAction';
+import { useLocation } from 'react-router-dom';
+
 
 function WelcomeBanner() {
 
-//   const { user, loading } = useSelector((state) => state.login || {});
-// console.log("usesrs",user)
+  const { token, decodedToken } = useSelector((state) => state.fetchToken);
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  console.log(decodedToken)
+  console.log(token)
 
+const dispatch = useDispatch()
+const location = useLocation();
+useEffect(() => {
+  dispatch(handleToken());
+}, [dispatch]);
+const user = decodedToken?.user.Name_Full
 
+useEffect(() => {
+  // Extract the page name from the current location
+  const path = location.pathname;
+  const pageName = path.substring(1); // Remove the leading slash
+
+  // Update the current page based on the route
+  setCurrentPage(pageName || 'dashboard'); // If the pageName is empty, set it to 'dashboard'
+}, [location]);
   return (
     <div className="relative bg-indigo-200 dark:bg-indigo-500 p-4 sm:p-6 rounded-sm overflow-hidden mb-8">
       {/* Background illustration */}
@@ -54,8 +73,20 @@ function WelcomeBanner() {
 
       {/* Content */}
       <div className="relative">
-        <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">Hello Pacifique👋</h1>
-        <p className="dark:text-indigo-200">Kigali Management: Inventory Dashboard</p>
+        <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">Hello {user}👋</h1>
+        <p className="dark:text-indigo-200">
+          {currentPage === 'dashboard'
+            ? 'Kigali Management: Inventory Dashboard'
+            : currentPage === 'user_supply_inventory_details'
+            ? 'User Supply Inventory Details'
+            : currentPage === 'user_transactions'
+            ? 'Coffee Purchases Site collector Daily journal'
+            : currentPage === 'user_transaction/cws-daily-journals'
+            ? 'CWS Daily Journals'
+            : currentPage === 'users'
+            ? 'Manage application Users'
+            : 'Welcome to Farmer Impact System'}
+        </p>
       </div>
     </div>
   );

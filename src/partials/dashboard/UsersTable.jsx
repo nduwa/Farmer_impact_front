@@ -14,6 +14,7 @@ const UsersTable = () => {
   const dispatch = useDispatch();
   const [allUsers, setAllUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState()
   const { users, loading } = useSelector((state) => state.users);
 
   const itemsPerPage = 20;
@@ -27,10 +28,25 @@ const UsersTable = () => {
     }
   }, [users]);
 
-  const totalPages = Math.ceil(allUsers?.length / itemsPerPage);
+  const handleSearch = (e)=>{
+    const searchItem = e.target.value;
+    setSearchQuery(searchItem)
+  }
+  const filteredUsers = searchQuery
+  ? allUsers?.filter((user) =>
+      Object.values(user).some(
+        (value) =>
+          typeof value === 'string' &&
+          value.toLowerCase().includes(searchQuery?.toLowerCase())
+      )
+    )
+  : allUsers;
+
+
+  const totalPages = Math.ceil(filteredUsers?.length / itemsPerPage);
   console.log("pages", totalPages);
   // Paginate the user data
-  const paginatedUsers = allUsers?.slice(
+  const paginatedUsers = filteredUsers?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -72,6 +88,8 @@ const UsersTable = () => {
                   id="products-search"
                   class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Search for users"
+                  value={searchQuery}
+                  onChange={handleSearch}
                 />
               </div>
             </form>
@@ -258,7 +276,7 @@ const UsersTable = () => {
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {allUsers.length}
+              {allUsers?.length}
             </span>
           </span>
         </div>

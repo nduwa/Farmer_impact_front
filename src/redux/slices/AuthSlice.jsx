@@ -4,6 +4,9 @@ const initialState = {
 	user: null,
 	error: null,
 	loading: false,
+	token: null,
+	name: null,
+	decodedToken: null,
 	
 };
 const loginSlice = createSlice({
@@ -24,8 +27,10 @@ const loginSlice = createSlice({
 			state.user = null;
 			state.error = action.payload;
 		},
+	
 	},
 });
-export const { loginPending, loginSuccess, loginFail } =
+
+export const { loginPending, loginSuccess, loginFail} =
 	loginSlice.actions;
 export default loginSlice.reducer;
