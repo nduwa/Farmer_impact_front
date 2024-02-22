@@ -32,7 +32,7 @@ function Dashboard() {
                 <FilterButton />
 
                 <NavLink end to="/user_supply_inventory_details">
-                  <button className="btn bg-secondary hover:bg-secondary_variant text-white">
+                  <button className="btn bg-black hover:bg-black text-white">
                     <span className="hidden xs:block ml-2">
                       See supply Inventory Detail
                     </span>

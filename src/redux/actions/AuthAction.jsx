@@ -1,7 +1,8 @@
 /* eslint-disable */
 import { toast } from 'react-toastify';
 import { Userlogin } from '../../api/userApi';
-import { loginPending, loginFail, loginSuccess } from '../slices/AuthSlice';
+import { jwtDecode } from 'jwt-decode';
+import { loginPending, loginFail, loginSuccess} from '../slices/AuthSlice';
 
 export const login = (userData) => async (dispatch) => {
   try {
@@ -26,3 +27,18 @@ export const login = (userData) => async (dispatch) => {
     return dispatch(loginFail('Invalid Credentials.'));
   }
 };
+
+
+
+export const handleToken = () => (dispatch) => {
+		const token = localStorage.getItem("token")
+console.log(token)
+	if (token) {
+		const decodedToken = jwtDecode(token);
+		dispatch(fetchToken(token));
+		dispatch(decodeToken(decodedToken));
+	} else {
+		dispatch(fetchFail());
+	}
+};
+
