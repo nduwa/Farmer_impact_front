@@ -13,6 +13,7 @@ import UserTransactions from './pages/UserTransactions';
 import CwsDailyJournal from './pages/CwsDailyJournal';
 import LoginPage from './pages/LoginPage';
 import Users from './pages/Users';
+import AccessControl from "./pages/AccessControl";
 
 
 
@@ -35,6 +36,7 @@ function App() {
         <Route exact path="/user_transaction/cws-daily-journals" element={<CwsDailyJournal />} />
         <Route exact path="/users" element={<Users />} />
         <Route exact path="/" element={<LoginPage />} />
+        <Route exact path="/users/access-controll" element={<AccessControl />} />
       </Routes>
     </>
   );
