@@ -32,21 +32,20 @@ export const allUsers = async () => {
 
 
 
-
-
-export const updateUser = (id, data) => {
+export const getUser = (userId) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.put(`${url}/user/update/${id}`, data)
+			.get(`${url}/user/user/${userId}`)
 			.then((response) => resolve(response.data))
 			.catch((error) => {
 				if (error.response.data !== undefined) {
 					reject(error.response.data);
+					console.log("err", error)
 				}
-				console.log("errr", error.message)
 				reject(error);
+				console.log("err", error)
+
+
 			});
 	});
 };
-
-

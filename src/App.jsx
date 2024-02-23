@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { Provider } from "react-redux";
 import { Routes, Route, useLocation } from "react-router-dom";
-
+import AccessControlMobile from "./pages/AccessControlMobile";
+import { useParams } from "react-router-dom";
 import "./css/style.css";
 
 import "./charts/ChartjsConfig";
@@ -19,7 +20,7 @@ import AccessControl from "./pages/AccessControl";
 
 function App() {
   const location = useLocation();
-
+const userId = useParams()
   useEffect(() => {
     document.querySelector("html").style.scrollBehavior = "auto";
     window.scroll({ top: 0 });
@@ -34,9 +35,10 @@ function App() {
         <Route exact path="/user_supply_inventory_details" element={<UserSupplyInventoryDetails />} />
         <Route exact path="/user_transactions" element={<UserTransactions />} />
         <Route exact path="/user_transaction/cws-daily-journals" element={<CwsDailyJournal />} />
-        <Route exact path="/users" element={<Users />} />
+        <Route exact path="/user-administration" element={<Users />} />
         <Route exact path="/" element={<LoginPage />} />
-        <Route exact path="/users/access-controll" element={<AccessControl />} />
+        <Route exact path="/user-administaration/access-controll/module-access/:userId" element={<AccessControl />} />
+        <Route exact path="/user-administaration/access-controll/mobile-access/:userId" element={<AccessControlMobile />} />
       </Routes>
     </>
   );

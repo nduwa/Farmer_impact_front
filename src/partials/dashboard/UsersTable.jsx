@@ -224,6 +224,7 @@ const UsersTable = () => {
                         <button
                           type="button"
                           id="deleteProductButton"
+                          onClick={() => navigate(`/user-administaration/access-controll/module-access/${user.id}`)}
                           data-drawer-target="drawer-delete-product-default"
                           data-drawer-show="drawer-delete-product-default"
                           aria-controls="drawer-delete-product-default"
@@ -235,6 +236,7 @@ const UsersTable = () => {
                         <button
                           type="button"
                           id="deleteProductButton"
+                          onClick={() => navigate(`/user-administaration/access-controll/mobile-access/${user.id}`)}
                           data-drawer-target="drawer-delete-product-default"
                           data-drawer-show="drawer-delete-product-default"
                           aria-controls="drawer-delete-product-default"

@@ -1,33 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { PiUsersFourDuotone } from "react-icons/pi";
-import { IoIosPhonePortrait } from "react-icons/io";
-import { GrSystem } from "react-icons/gr";
 import { getSingleUserById } from "../../redux/actions/singleUserAction";
 import { getModules } from "../../redux/actions/accessModules/getAllModulesAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { PiUsersFourDuotone } from "react-icons/pi";
+import { IoIosPhonePortrait } from "react-icons/io";
+import { GrSystem } from "react-icons/gr";
 
-const AccessControlTable = () => {
+const AccessControlMobileTable = () => {
   const userId = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [fetchedUser, setFetchedUser] = useState();
-  const [retrievedModules, setRetrievedModules] = useState();
   const { user, loading } = useSelector((state) => state.fetchSingleUser);
   const { modules } = useSelector((state) => state.fetchAllModules);
+  const [retrievedModules, setRetrievedModules] = useState();
 
   useEffect(() => {
     dispatch(getSingleUserById(userId.userId));
   }, [dispatch]);
-  // console.log("userId", user?.data.Name_Full)
+  console.log("userId", user?.data.Name_Full);
   useEffect(() => {
     if (user) {
       setFetchedUser(user?.data);
     }
   }, [user]);
-
-  // console.log("fetcheddd", fetchedUser)
 
   useEffect(() => {
     dispatch(getModules());
@@ -41,11 +39,12 @@ const AccessControlTable = () => {
       console.log("retttt", retrievedModules);
     }
   }, [user]);
+
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 mb-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
         <p className="mb-6 ml-20">
-          Dashboard access control for <b>{fetchedUser?.Name_Full}</b>
+          Mobile access control for <b>{fetchedUser?.Name_Full}</b>
         </p>
         <div className="   items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center ml-20 mb-4 sm:mb-0 gap-24">
@@ -95,112 +94,32 @@ const AccessControlTable = () => {
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden shadow">
               <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
-                <thead className="bg-gray-100 dark:bg-gray-900">
-                  <tr>
-                    <th scope="col" className="p-4">
-                      <div className="flex items-center">
-                        <input
-                          id="checkbox-all"
-                          aria-describedby="checkbox-1"
-                          type="checkbox"
-                          className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                        <label htmlFor="checkbox-all" className="sr-only">
-                          checkbox
-                        </label>
-                      </div>
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      View
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Add
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Del
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Edit
-                    </th>
-                  </tr>
-                </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                   {retrievedModules
                     ?.filter(
                       (module) =>
-                        module.platform === "dashboard" && module.module_name
+                        module.platform === "mobile" && module.module_name
                     ) // Filter modules with "dashboard" platform and have module_name
                     .map((module, index) => (
                       <tr
-                        key={index}
+                        // key={user.id}
                         className="hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
+                        <td className="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <div className="flex items-center">
+                            <input
+                              id="checkbox-all"
+                              aria-describedby="checkbox-1"
+                              type="checkbox"
+                              className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                            />
+                            <label htmlFor="checkbox-all" className="sr-only">
+                              checkbox
+                            </label>
+                          </div>
+                        </td>
                         <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                           {module.module_name}
-                        </td>
-                        <td className="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-all"
-                              aria-describedby="checkbox-1"
-                              type="checkbox"
-                              className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label htmlFor="checkbox-all" className="sr-only">
-                              checkbox
-                            </label>
-                          </div>
-                        </td>
-                        <td className="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-all"
-                              aria-describedby="checkbox-1"
-                              type="checkbox"
-                              className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label htmlFor="checkbox-all" className="sr-only">
-                              checkbox
-                            </label>
-                          </div>
-                        </td>
-                        <td className="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-all"
-                              aria-describedby="checkbox-1"
-                              type="checkbox"
-                              className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label htmlFor="checkbox-all" className="sr-only">
-                              checkbox
-                            </label>
-                          </div>
-                        </td>
-                        <td className="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-all"
-                              aria-describedby="checkbox-1"
-                              type="checkbox"
-                              className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label htmlFor="checkbox-all" className="sr-only">
-                              checkbox
-                            </label>
-                          </div>
                         </td>
                       </tr>
                     ))}
@@ -220,4 +139,4 @@ const AccessControlTable = () => {
   );
 };
 
-export default AccessControlTable;
+export default AccessControlMobileTable;

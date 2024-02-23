@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import Transition from '../utils/Transition';
-
 import UserAvatar from '../images/user-avatar-32.png';
 import { useDispatch, useSelector } from "react-redux";
 import { handleToken } from '../redux/actions/fetchTokenAction';
-
+import { signOutUser } from '../redux/actions/logoutAction';
 function DropdownProfile({
   align
 }) {
@@ -14,7 +13,7 @@ function DropdownProfile({
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
-
+  const navigate = useNavigate();
   const { token, decodedToken } = useSelector((state) => state.fetchToken);
   console.log(decodedToken)
   console.log(token)
@@ -46,6 +45,8 @@ const Role = decodedToken?.user.Role
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
   });
+
+
 
   return (
     <div className="relative inline-flex">
@@ -95,13 +96,21 @@ const Role = decodedToken?.user.Role
               </Link>
             </li>
             <li>
-              <Link
-                className="font-medium text-sm text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center py-1 px-3"
-                to="/signin"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                Sign Out
-              </Link>
+            <span
+            className="font-medium text-sm text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center py-1 px-3 cursor-pointer"
+            onClick={() => {
+              // Dispatch the signOutUser action when the "Sign Out" link is clicked
+              dispatch(signOutUser());
+
+              // Remove the token from local storage
+              localStorage.removeItem("token");
+
+              // Redirect to the root ('/') after sign out
+              navigate('/');
+            }}
+          >
+            Sign Out
+          </span>
             </li>
           </ul>
         </div>
