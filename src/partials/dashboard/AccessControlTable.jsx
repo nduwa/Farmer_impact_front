@@ -16,6 +16,7 @@ const AccessControlTable = () => {
   const [retrievedModules, setRetrievedModules] = useState();
   const { user, loading } = useSelector((state) => state.fetchSingleUser);
   const { modules } = useSelector((state) => state.fetchAllModules);
+ 
 
   useEffect(() => {
     dispatch(getSingleUserById(userId.userId));
@@ -41,6 +42,8 @@ const AccessControlTable = () => {
       console.log("retttt", retrievedModules);
     }
   }, [user]);
+
+
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 mb-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
