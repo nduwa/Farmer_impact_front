@@ -3,6 +3,7 @@ import {login} from '../../redux/actions/AuthAction'
 import { useDispatch, useSelector } from "react-redux";
 import { handleToken } from '../../redux/actions/fetchTokenAction';
 import { useLocation } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 
 function WelcomeBanner() {
@@ -11,6 +12,8 @@ function WelcomeBanner() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   console.log(decodedToken)
   console.log(token)
+const userId = useParams()
+
 
 const dispatch = useDispatch()
 const location = useLocation();
@@ -81,9 +84,13 @@ useEffect(() => {
             ? 'User Supply Inventory Details'
             : currentPage === 'user_transactions'
             ? 'Coffee Purchases Site collector Daily journal'
+            : currentPage === 'user-administaration/access-controll/module-access/:userId'
+            ? 'Administration Module Access'
+            : currentPage === `user-administaration/access-controll/mobile-access/:${userId}`
+            ? 'Administration Mobile Access'
             : currentPage === 'user_transaction/cws-daily-journals'
             ? 'CWS Daily Journals'
-            : currentPage === 'users'
+            : currentPage === 'user-administration'
             ? 'Manage application Users'
             : 'Welcome to Farmer Impact System'}
         </p>

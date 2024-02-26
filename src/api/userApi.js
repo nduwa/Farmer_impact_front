@@ -30,10 +30,6 @@ export const allUsers = async () => {
   }
 };
 
-
-
-
-
 export const updateUser = (id, data) => {
 	return new Promise((resolve, reject) => {
 		axios
@@ -49,4 +45,20 @@ export const updateUser = (id, data) => {
 	});
 };
 
+export const getUser = (userId) => {
+	return new Promise((resolve, reject) => {
+		axios
+			.get(`${url}/user/user/${userId}`)
+			.then((response) => resolve(response.data))
+			.catch((error) => {
+				if (error.response.data !== undefined) {
+					reject(error.response.data);
+					console.log("err", error)
+				}
+				reject(error);
+				console.log("err", error)
 
+
+			});
+	});
+};
