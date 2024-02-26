@@ -8,13 +8,21 @@ import { fetchAllUsers } from "../../redux/actions/UsersAction";
 import { RiKey2Line } from "react-icons/ri";
 import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { IoIosPhonePortrait } from "react-icons/io";
+import SetCredentialsModel from "../../components/SetCredentialsModel";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const UsersTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [allUsers, setAllUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState()
+  const [searchQuery, setSearchQuery] = useState();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showPasswordModel, setShowPasswordModel] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { users, loading } = useSelector((state) => state.users);
 
   const itemsPerPage = 20;
@@ -28,20 +36,19 @@ const UsersTable = () => {
     }
   }, [users]);
 
-  const handleSearch = (e)=>{
+  const handleSearch = (e) => {
     const searchItem = e.target.value;
-    setSearchQuery(searchItem)
-  }
+    setSearchQuery(searchItem);
+  };
   const filteredUsers = searchQuery
-  ? allUsers?.filter((user) =>
-      Object.values(user).some(
-        (value) =>
-          typeof value === 'string' &&
-          value.toLowerCase().includes(searchQuery?.toLowerCase())
+    ? allUsers?.filter((user) =>
+        Object.values(user).some(
+          (value) =>
+            typeof value === "string" &&
+            value.toLowerCase().includes(searchQuery?.toLowerCase())
+        )
       )
-    )
-  : allUsers;
-
+    : allUsers;
 
   const totalPages = Math.ceil(filteredUsers?.length / itemsPerPage);
   console.log("pages", totalPages);
@@ -59,6 +66,17 @@ const UsersTable = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
+  const handleClickAction = (user) => {
+    setSelectedUser(user);
+    setShowPasswordModel(true);
+  };
+
+  const handlePasswordUpdate = (userId, newPassword) => {
+    setPassword("");
+    setConfirmPassword("");
+    setSelectedUser(null);
+    setShowPasswordModel(true);
+  };
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",
@@ -191,9 +209,17 @@ const UsersTable = () => {
                           aria-controls="drawer-update-product-default"
                           data-drawer-placement="right"
                           className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-300 hover:bg-green-400 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                          onClick={() => handleClickAction(user)}
                         >
                           <RiKey2Line />
                         </button>
+                        {showPasswordModel && selectedUser && (
+                          <SetCredentialsModel
+                            user={selectedUser}
+                            onClose={() => setShowPasswordModel(false)}
+                            onSubmit={handlePasswordUpdate}
+                          />
+                        )}
 
                         <button
                           type="button"
@@ -223,6 +249,8 @@ const UsersTable = () => {
                 </tbody>
               </table>
             </div>
+            <ToastContainer/>
+
           </div>
         </div>
       </div>
@@ -280,9 +308,7 @@ const UsersTable = () => {
             </span>
           </span>
         </div>
-      
       </div>
-
       {/* update drawer */}
       <UpdateItemDrawer />
 

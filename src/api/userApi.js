@@ -30,3 +30,23 @@ export const allUsers = async () => {
   }
 };
 
+
+
+
+
+export const updateUser = (id, data) => {
+	return new Promise((resolve, reject) => {
+		axios
+			.put(`${url}/user/update/${id}`, data)
+			.then((response) => resolve(response.data))
+			.catch((error) => {
+				if (error.response.data !== undefined) {
+					reject(error.response.data);
+				}
+				console.log("errr", error.message)
+				reject(error);
+			});
+	});
+};
+
+
