@@ -8,6 +8,7 @@ import updateUserSlice from "./slices/updateUserSlice";
 import getSingleUserSlice from './slices/singleUserSlice'
 import fetchAllModulesSlice from '../redux/slices/accessModules/getAllModulesSlice'
 import logoutSlice from "./slices/logoutSlice";
+import fetchAllStaffSlice from './slices/coffeePurchase/allTransactionSlice'
 const store = configureStore({
   reducer: {
     user: UserSlice.reducer,
@@ -18,7 +19,8 @@ const store = configureStore({
 
     fetchSingleUser:getSingleUserSlice,
     fetchAllModules:fetchAllModulesSlice,
-    logout:logoutSlice
+    logout:logoutSlice,
+    fetchAllStaff:fetchAllStaffSlice
  
   },
 });

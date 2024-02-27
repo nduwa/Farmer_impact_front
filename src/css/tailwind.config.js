@@ -28,7 +28,11 @@ module.exports = {
         secondary: "#610000",
         secondary_variant: "#953b2c",
         white_variant: "#ffffff",
+        // chocolate: '#8A4513', 
       },
+   
+       
+     
       outline: {
         blue: "2px solid rgba(0, 112, 244, 0.5)",
       },

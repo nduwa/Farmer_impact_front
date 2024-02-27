@@ -34,7 +34,7 @@ const userId = useParams()
     
         <Route exact path="/user_supply_inventory_details" element={<UserSupplyInventoryDetails />} />
         <Route exact path="/user_transactions" element={<UserTransactions />} />
-        <Route exact path="/user_transaction/cws-daily-journals" element={<CwsDailyJournal />} />
+        <Route exact path="/user-transactions/cws-daily-journals" element={<CwsDailyJournal />} />
         <Route exact path="/user-administration" element={<Users />} />
         <Route exact path="/" element={<LoginPage />} />
         <Route exact path="/user-administaration/access-controll/module-access/:userId" element={<AccessControl />} />
