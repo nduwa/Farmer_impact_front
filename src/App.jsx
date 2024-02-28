@@ -15,12 +15,14 @@ import CwsDailyJournal from './pages/CwsDailyJournal';
 import LoginPage from './pages/LoginPage';
 import Users from './pages/Users';
 import AccessControl from "./pages/AccessControl";
+import TransactionDetails from "./pages/TransactionDetails";
 
 
 
 function App() {
   const location = useLocation();
 const userId = useParams()
+const journalId = useParams()
   useEffect(() => {
     document.querySelector("html").style.scrollBehavior = "auto";
     window.scroll({ top: 0 });
@@ -39,6 +41,7 @@ const userId = useParams()
         <Route exact path="/" element={<LoginPage />} />
         <Route exact path="/user-administaration/access-controll/module-access/:userId" element={<AccessControl />} />
         <Route exact path="/user-administaration/access-controll/mobile-access/:userId" element={<AccessControlMobile />} />
+        <Route exact path="/user_transactions/staff_lot_details/:journalId" element={<TransactionDetails />} />
       </Routes>
     </>
   );

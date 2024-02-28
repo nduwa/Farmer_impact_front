@@ -13,6 +13,7 @@ function WelcomeBanner() {
   console.log(decodedToken)
   console.log(token)
 const userId = useParams()
+const journalId = useParams()
 
 
 const dispatch = useDispatch()
@@ -90,6 +91,9 @@ useEffect(() => {
             ? 'Administration Mobile Access'
             : currentPage === 'user_transaction/cws-daily-journals'
             ? 'CWS Daily Journals'
+            : currentPage === `user_transactions/staff_lot_details/:journalId`
+            ? 'Coffee Purchases Site collector details'
+
             : currentPage === 'user-administration'
             ? 'Manage application Users'
             : 'Welcome to Farmer Impact System'}

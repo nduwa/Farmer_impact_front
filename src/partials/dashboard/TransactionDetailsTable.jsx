@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { fetchAllTransactions } from "../../redux/actions/coffeePurchase/allTransactionsAction";
 import { fetchAllStaff } from "../../redux/actions/coffeePurchase/allTransactionsAction";
 
-const UserTransactionsTable = () => {
+const TransactionDetailsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [allTransactions, setAllTransactions] = useState([]);
@@ -215,54 +215,142 @@ const UserTransactionsTable = () => {
   };
 
   return (
+
+
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
+      <span className="font-large font-bold ml-12 ">Site collector Daily Journal</span>
         <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
-          <div className="flex  items-center mb-4 sm:mb-0">
-            <form className=" flex gap-4   sm:pr-3 " action="#" method="GET">
-              <label htmlFor="products-search" className="sr-only">
-                Search
-              </label>
-              <div className="relative w-48 mt-1 sm:w-64 xl:w-96">
-                <span>Site collector's name</span>
-                <input
-  type="text"
-  name="email"
-  id="products-search"
-  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-  placeholder="Search by site collector's name"
-  onChange={handleSearch}
-/>
+   
+          <div className="flex  items-center mb-4 -ml-3 sm:mb-0 ">
+           
+          <table className="min-w-full divide-y divide-gray-200 ml-14 mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
+        
+        
+  <thead className=" dark:bg-gray-700">
+    <tr className="border-b">
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r "
+      >
+        UPLOADED TIME
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+        June, 20 2023 07:33 AM
+      </td>
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        TRANSACTION DATE
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+        June, 19 2023
+      </td>
+    </tr>
+    <tr className="border-b">
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        UPLOADED TIME
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+        June, 20 2023 07:33 AM
+      </td>
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        TRANSACTION DATE
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+        June, 19 2023
+      </td>
+    </tr>
+    <tr className="border-b">
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        UPLOADED TIME
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+        June, 20 2023 07:33 AM
+      </td>
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        TRANSACTION DATE
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+        June, 19 2023
+      </td>
+    </tr>
+    <tr className="border-b">
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        UPLOADED TIME
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+        June, 20 2023 07:33 AM
+      </td>
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        TRANSACTION DATE
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+        June, 19 2023
+      </td>
+    </tr>
+    <tr className="border-b">
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        UPLOADED TIME
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+        June, 20 2023 07:33 AM
+      </td>
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        TRANSACTION DATE
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+        June, 19 2023
+      </td>
+    </tr>
+    <tr className="border-b">
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        UPLOADED TIME
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+        June, 20 2023 07:33 AM
+      </td>
+      <th
+        scope="col"
+        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+      >
+        TRANSACTION DATE
+      </th>
+      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+        June, 19 2023
+      </td>
+    </tr>
+  </thead>
+</table>
 
-              </div>
-              <label htmlFor="date-from" className="sr-only">
-                From
-              </label>
-              <div className="relative w-48 mt-1 sm:w-64 ">
-                <span>From</span>
-                <input
-                  type="date"
-                  value={new Date().toISOString().split("T")[0]}
-                  name="start-date"
-                  id="start-date"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder=""
-                />
-              </div>
-              <label htmlFor="date-to" className="sr-only">
-                to
-              </label>
-              <div className="relative w-48 mt-1 sm:w-64 ">
-                <span>To</span>
-                <input
-                  type="date"
-                  name="end-date"
-                  id="end-date"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder=""
-                />
-              </div>
-            </form>
           </div>
         </div>
       </div>
@@ -273,8 +361,8 @@ const UserTransactionsTable = () => {
               <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
-                    <th scope="col" className="p-4">
-                      #
+                 <th scope="col" className="p-4">
+                      #   
                     </th>
                     <th
                       scope="col"
@@ -367,7 +455,7 @@ const UserTransactionsTable = () => {
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         <a
-                          href={`user_transactions/staff_lot_details/:${transaction.site_day_lot}`}
+                          href={`your_link_destination_here/${transaction.site_day_lot}`}
                           className="text-blue-500 hover:text-gray-500"
                         >
                           #{transaction.site_day_lot}
@@ -500,4 +588,4 @@ const UserTransactionsTable = () => {
   );
 };
 
-export default UserTransactionsTable;
+export default TransactionDetailsTable;

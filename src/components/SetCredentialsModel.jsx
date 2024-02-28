@@ -63,7 +63,7 @@ export default function SetCredentialsModel({ user, onClose, onSubmit }) {
           <input
             className="rounded-lg"
             type="text"
-            value={user.Name_Full}
+            value={user.Name}
             readOnly
           />
           <br />
@@ -71,14 +71,14 @@ export default function SetCredentialsModel({ user, onClose, onSubmit }) {
           <input
             className="rounded-lg"
             type="text"
-            value={user.Name_User}
+            value={user.Role}
             readOnly
           />
           <br />
           <input
             className="rounded-lg"
             type="text"
-            value={user.Email}
+            value={user.userID}
             readOnly
           />
           <br />
