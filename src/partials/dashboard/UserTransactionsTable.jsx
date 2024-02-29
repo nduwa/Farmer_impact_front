@@ -367,7 +367,7 @@ const UserTransactionsTable = () => {
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         <a
-                          href={`user_transactions/staff_lot_details/:${transaction.site_day_lot}`}
+                          href={`user_transactions/staff_lot_details/${transaction.site_day_lot}`}
                           className="text-blue-500 hover:text-gray-500"
                         >
                           #{transaction.site_day_lot}

@@ -33,3 +33,21 @@ export const allStaff = async () => {
         });
     });
   };
+
+
+
+  export const allTransactionsByJournalId = (token,journalId) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`${url}/coffeePurchase/dailyJournal/${journalId}`, {
+          headers: { auth_token: ` ${token}` },
+        })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          if (error.response.data !== undefined) {
+            reject(error.response.data);
+          }
+          reject(error);
+        });
+    });
+  };

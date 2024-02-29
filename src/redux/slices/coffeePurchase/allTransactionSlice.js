@@ -5,6 +5,7 @@ const initialState = {
 	transactions:null,
 	error: null,
 	loading: false,
+	journal:null
 	
 };
 const fetchAllStaffSlice = createSlice({
@@ -39,10 +40,24 @@ const fetchAllStaffSlice = createSlice({
 			state.transactions = null;
 			state.error = action.payload;
 		},
+		journalPending: (state) => {
+			state.loading = true;
+			state.error = null;
+		},
+		journalSuccess: (state, action) => {
+			state.loading = false;
+			state.error = null;
+			state.journal = action.payload;
+		},
+		journalFail: (state, action) => {
+		state.loading = false;
+			state.journal = null;
+			state.error = action.payload;
+		},
 	
 	},
 });
 
-export const { fetchPending, fetchSuccess, fetchFail, transactionsPending,transactionsSuccess,transactionsFail} =
+export const { fetchPending, fetchSuccess, fetchFail, transactionsPending,transactionsSuccess,transactionsFail , journalPending,journalSuccess,journalFail} =
 fetchAllStaffSlice.actions;
 export default fetchAllStaffSlice.reducer;

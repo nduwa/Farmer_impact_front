@@ -2,108 +2,51 @@ import React, { useState, useEffect } from "react";
 import UpdateItemDrawer from "./UpdateItemDrawer";
 import DeleteItemDrawer from "./DeleteItemDrawer";
 import AddItemDrawer from "./AddItemDrawer";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer } from "react-toastify";
+import EditTransactionModel from "../../components/EditTransactionModel";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchAllTransactions } from "../../redux/actions/coffeePurchase/allTransactionsAction";
-import { fetchAllStaff } from "../../redux/actions/coffeePurchase/allTransactionsAction";
+
+import { fetchAllTransactionsByJournal } from "../../redux/actions/coffeePurchase/allTransactionsAction";
+
+import { MdModeEdit } from "react-icons/md";
+
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const TransactionDetailsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [allTransactions, setAllTransactions] = useState([]);
-  const { transactions } = useSelector((state) => state.fetchAllStaff);
-  const [allStaff, setAllStaff] = useState([]);
+
+  const [journals, setJournals] = useState([]);
+
+  const { journal } = useSelector((state) => state.fetchAllStaff);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState();
-  const { staffs } = useSelector((state) => state.fetchAllStaff);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showTransactionModel, setShowTransactionModel] = useState(false);
   const token = localStorage.getItem("token");
   const itemsPerPage = 20;
+  const journalId = useParams();
+
+  console.log(journal);
 
   useEffect(() => {
-    dispatch(fetchAllTransactions(token));
+    dispatch(
+      fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", ""))
+    );
   }, [dispatch]);
 
   useEffect(() => {
-    if (transactions) {
-      setAllTransactions(transactions.data);
+    if (journal) {
+      setJournals(journal.data);
     }
-  }, [transactions]);
-  console.log("transactions", allTransactions);
-
-  useEffect(() => {
-    dispatch(fetchAllStaff());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (staffs) {
-      setAllStaff(staffs.data);
-    }
-  }, [staffs]);
-  console.log("transactionWEFSERFERs", allStaff);
-
-  const handleSearch = (e) => {
-    const searchItem = e.target.value;
-    setSearchQuery(searchItem);
-  };
-
-  // Function to get unique values from an array
-  const getUniqueValues = (arr, key) => {
-    const uniqueValues = [];
-    const uniqueKeys = new Set();
-
-    arr.forEach((item) => {
-      const value = item[key];
-
-      if (!uniqueKeys.has(value)) {
-        uniqueKeys.add(value);
-        uniqueValues.push(item);
-      }
-    });
-
-    return uniqueValues;
-  };
-
-  // const filteredTransaction = searchQuery
-  //   ? allTransactions?.filter((transaction) =>
-  //       Object.values(transaction).some(
-  //         (value) =>
-  //           typeof value === "string" &&
-  //           value.toLowerCase().includes(searchQuery?.toLowerCase())
-  //       )
-  //     )
-  //   : allTransactions;
-
-  const filteredTransaction = searchQuery
-    ? getUniqueValues(
-        allTransactions?.filter((transaction) =>
-          Object.values(transaction).some(
-            (value) =>
-              typeof value === "string" &&
-              value.toLowerCase().includes(searchQuery?.toLowerCase())
-          )
-        ),
-        "site_day_lot"
-      )
-    : getUniqueValues(allTransactions, "site_day_lot");
-    console.log("transactions",filteredTransaction.length)
-
-  const getUserScIdById = (_kf_Staff) => {
-    const staff = allStaff?.find((staff) => staff.__kp_Staff === _kf_Staff);
-    return staff ? staff.userID : null;
-  };
-
-  const getUserNameById = (_kf_Staff) => {
-    const staff = allStaff?.find((staff) => staff.__kp_Staff === _kf_Staff);
-    return staff ? staff.Name : null;
-  };
+  }, [journal]);
 
   const calculateTotalKilogramsByJournal = () => {
     const sumByJournal = {};
 
     // Iterate through transactions
-    allTransactions.forEach((transaction) => {
+    journals.forEach((transaction) => {
       const journal = transaction.site_day_lot;
       const kilograms = transaction.kilograms || 0;
 
@@ -122,72 +65,61 @@ const TransactionDetailsTable = () => {
   // Call the calculateTotalKilogramsByJournal function to get the sum
   const sumByJournal = calculateTotalKilogramsByJournal();
 
-  console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
+  // console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
 
   const calculateTotalPrice = () => {
-    const totalPriceByJournal = {};
+    const totalPriceByTransaction = {};
 
-   
-    allTransactions.forEach((transaction) => {
-      const journal = transaction.site_day_lot;
+    journals.forEach((transaction) => {
+      const transactionId = transaction.id;
       const cash = transaction.cash_paid || 0;
 
-     
-      if (!totalPriceByJournal[journal]) {
-        totalPriceByJournal[journal] = 0;
+      if (!totalPriceByTransaction[transactionId]) {
+        totalPriceByTransaction[transactionId] = 0;
       }
 
-    
-      totalPriceByJournal[journal] += cash;
+      totalPriceByTransaction[transactionId] += cash;
     });
 
-    return totalPriceByJournal;
+    return totalPriceByTransaction;
   };
 
-  
-  const totalPriceByJournal = calculateTotalPrice();
+  const totalPriceByTransaction = calculateTotalPrice();
 
-  console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
+  const calculateTotalMomoAmount = () => {
+    const totalMomoAmountByTransaction = {};
 
-  const sumFloatersKG = () => {
-    const sum = {};
+    journals.forEach((transaction) => {
+      const transactionId = transaction.id;
+      const cash = transaction.total_mobile_money_payment_paid || 0;
 
-    
-    allTransactions.forEach((transaction) => {
-      const journal = transaction.site_day_lot;
-      const kilograms = transaction.bad_kilograms;
-
-      
-      if (!sum[journal]) {
-        sum[journal] = 0;
+      if (!totalMomoAmountByTransaction[transactionId]) {
+        totalMomoAmountByTransaction[transactionId] = 0;
       }
 
-      
-      sum[journal] += kilograms;
+      totalMomoAmountByTransaction[transactionId] += cash;
     });
 
-    return sum;
+    return totalMomoAmountByTransaction;
   };
-  const floatersSum = sumFloatersKG();
+
+  const totalMomoAmountByTransaction = calculateTotalMomoAmount();
+
+  // console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
 
   const calculateTotalKilogramsPurchased = (transaction) => {
     const certifiedKG =
-      transaction.certified === 1
-        ? sumByJournal[transaction.site_day_lot] || 0
-        : 0;
+      transaction.certified === 1 ? transaction.kilograms || 0 : 0;
     const uncertifiedKG =
-      transaction.certified === 1
-        ? 0
-        : sumByJournal[transaction.site_day_lot] || 0;
-    const floatersKG = floatersSum[transaction.site_day_lot] || 0;
+      transaction.certified === 1 ? 0 : transaction.kilograms || 0;
+    const floatersKG = transaction.bad_kilograms || 0;
 
     return certifiedKG + uncertifiedKG + floatersKG;
   };
 
-  const totalPages = Math.ceil(filteredTransaction?.length / itemsPerPage);
-  console.log("pages", totalPages);
-  // Paginate the user data
-  const paginatedTransactions = filteredTransaction?.slice(
+  const totalPages = Math.ceil(journals?.length / itemsPerPage);
+
+  const paginatedTransactions = journals?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -200,10 +132,9 @@ const TransactionDetailsTable = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
-  const allPaperReceipts = allTransactions.map(
+  const allPaperReceipts = journals.map(
     (transaction) => transaction.paper_receipt
   );
-  console.log("paperr", allPaperReceipts);
 
   const isUniquePaperSlip = (paperReceipt) => {
     const occurrences = allPaperReceipts.filter(
@@ -214,143 +145,203 @@ const TransactionDetailsTable = () => {
     return occurrences === 1;
   };
 
+  const calculateTotalValues = () => {
+    const totalValues = {
+      uploadedTime: 0,
+      transactionDate: "",
+      totalFloaters: 0,
+      averagePrice: 0,
+      totalCertified: 0,
+      totalUncertified: 0,
+      totalCoffeeValue: 0,
+      totalUnTraceableKg: 0,
+      totalKgs: 0,
+      siteCollector: "",
+    };
+
+    // Iterate through transactions
+    journals.forEach((transaction) => {
+      totalValues.transactionDate = transaction.transaction_date;
+
+      totalValues.uploadedTime = transaction.uploaded_at;
+
+      if (transaction.certified === 1) {
+        totalValues.totalCertified += transaction.kilograms;
+        totalValues.totalUncertified = 0;
+      } else {
+        totalValues.totalUncertified += transaction.kilograms;
+        totalValues.totalCertified = 0;
+      }
+      totalValues.totalFloaters += transaction.bad_kilograms;
+      totalValues.averagePrice = transaction.unitprice;
+      totalValues.totalCoffeeValue += transaction.cash_paid;
+      totalValues.totalKgs =
+        totalValues.totalCertified +
+        totalValues.totalUncertified +
+        totalValues.totalFloaters;
+    });
+
+    return totalValues;
+  };
+
+  // Call the calculateTotalValues function to get the total values
+  const totalValues = calculateTotalValues();
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+    };
+
+    return new Intl.DateTimeFormat("en-US", options).format(
+      new Date(dateString)
+    );
+  };
+  const handleClickAction = (transaction) => {
+    setSelectedUser(transaction);
+    setShowTransactionModel(true);
+  };
+  console.log("rwtytry",selectedUser)
+
+  const handlePasswordUpdate = (userId, newPassword) => {
+   
+    setSelectedUser(null);
+    setShowTransactionModel(true);
+  };
   return (
-
-
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
-      <span className="font-large font-bold ml-12 ">Site collector Daily Journal</span>
+        <span className="font-large font-bold ml-12 ">
+          Site collector Daily Journal
+        </span>
         <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
-   
           <div className="flex  items-center mb-4 -ml-3 sm:mb-0 ">
-           
-          <table className="min-w-full divide-y divide-gray-200 ml-14 mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
-        
-        
-  <thead className=" dark:bg-gray-700">
-    <tr className="border-b">
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r "
-      >
-        UPLOADED TIME
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-        June, 20 2023 07:33 AM
-      </td>
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        TRANSACTION DATE
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-        June, 19 2023
-      </td>
-    </tr>
-    <tr className="border-b">
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        UPLOADED TIME
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-        June, 20 2023 07:33 AM
-      </td>
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        TRANSACTION DATE
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-        June, 19 2023
-      </td>
-    </tr>
-    <tr className="border-b">
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        UPLOADED TIME
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-        June, 20 2023 07:33 AM
-      </td>
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        TRANSACTION DATE
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-        June, 19 2023
-      </td>
-    </tr>
-    <tr className="border-b">
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        UPLOADED TIME
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-        June, 20 2023 07:33 AM
-      </td>
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        TRANSACTION DATE
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-        June, 19 2023
-      </td>
-    </tr>
-    <tr className="border-b">
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        UPLOADED TIME
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-        June, 20 2023 07:33 AM
-      </td>
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        TRANSACTION DATE
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-        June, 19 2023
-      </td>
-    </tr>
-    <tr className="border-b">
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        UPLOADED TIME
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-        June, 20 2023 07:33 AM
-      </td>
-      <th
-        scope="col"
-        className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-      >
-        TRANSACTION DATE
-      </th>
-      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-        June, 19 2023
-      </td>
-    </tr>
-  </thead>
-</table>
-
+            <table className="min-w-full  divide-y divide-gray-200 ml-14 mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
+              <thead className=" dark:bg-gray-700">
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r "
+                  >
+                    UPLOADED TIME
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {formatDate(totalValues.uploadedTime)}
+                  </td>
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    TRANSACTION DATE
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {totalValues.transactionDate}
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    SITE COLLECTOR NAME
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {journal?.staffData[0].Name}
+                  </td>
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    SITE COLLECTOR ID
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {journal?.staffData[0].userID}
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    SC DAILY JOURNAL LOT
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {journalId.journalId.replace(":", "")}
+                  </td>
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    COFFEE VALUE
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {totalValues.totalCoffeeValue.toLocaleString()}
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    AVERAGE PRICE
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {totalValues.averagePrice}
+                  </td>
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    CERTIFIED KG
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {totalValues.totalCertified}
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    UNCERTIFIED KG
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {totalValues.totalUncertified}
+                  </td>
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    UNTRACEABLE KG
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {totalValues.totalUncertified}
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    FLOATERS KG
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {totalValues.totalFloaters}
+                  </td>
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    TOTAL KG
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {totalValues.totalKgs.toLocaleString()}
+                  </td>
+                </tr>
+              </thead>
+            </table>
           </div>
         </div>
       </div>
@@ -361,74 +352,92 @@ const TransactionDetailsTable = () => {
               <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
-                 <th scope="col" className="p-4">
-                      #   
+                    <th scope="col" className="p-4">
+                      FLAG
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      BUY DATE
+                      FARMER.ID
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      JOURNAL#
+                      FARMER.NAME
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      SC.NAME
+                      PAPER.RECEIPT
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      SC.ID
+                      KG.CERT
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      CERTIFIED.KG
+                      KG.UNCERT
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      UNCERTIFIED.KG
+                      PX.PER.KG
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      FLOATERS.KG
+                      FLOATER.KG
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      TOTAL KG PURCHASED
+                      FLOATER.PX
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      PAYMENTS.MADE
+                      TOTAL.KG
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      STATUS
+                      PURCHASE.DATE
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      CHERRY DAY LOT
+                      TOTAL
+                    </th>
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      CASH
+                    </th>
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      MOBILE
+                    </th>
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      ACTION
                     </th>
                   </tr>
                 </thead>
@@ -451,44 +460,33 @@ const TransactionDetailsTable = () => {
                       </td>
 
                       <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        {transaction.transaction_date}
+                        {transaction.farmerid}
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        <a
-                          href={`your_link_destination_here/${transaction.site_day_lot}`}
-                          className="text-blue-500 hover:text-gray-500"
-                        >
-                          #{transaction.site_day_lot}
-                        </a>
+                        {transaction.farmername}
                       </td>
 
                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                        <a
-                          href=""
-                          className="text-blue-500 hover:text-gray-500"
-                        >
-                          {getUserNameById(transaction._kf_Staff)}
-                        </a>
+                        {transaction.paper_receipt}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {getUserScIdById(transaction._kf_Staff)}
-                      </td>
-                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {transaction.certified === 1
-                          ? sumByJournal[
-                              transaction.site_day_lot
-                            ].toLocaleString()
+                          ? transaction.kilograms
                           : 0}
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {transaction.certified === 1
                           ? 0
-                          : sumByJournal[
-                              transaction.site_day_lot.toLocaleString()
-                            ]}
+                          : transaction.kilograms}
+                      </td>
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {transaction.unitprice}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {floatersSum[transaction.site_day_lot].toLocaleString()}
+                        {transaction.bad_kilograms}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {transaction.bad_unit_price}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {calculateTotalKilogramsPurchased(
@@ -496,21 +494,60 @@ const TransactionDetailsTable = () => {
                         ).toLocaleString()}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {totalPriceByJournal[
-                          transaction.site_day_lot
-                        ].toLocaleString()}
+                        {transaction.transaction_date}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.approved === 1 ? (
-                          <button className="bg-green-500 text-white w-24 h-8 rounded-md">Approved</button>
-
-                          // <p className="bg-green-500 text-white">Approved</p>
-                        ) : (
-                          <button className="bg-orange-300 text-white w-24 h-8 rounded-md">Pending...</button>
+                        {totalPriceByTransaction[
+                          transaction.id
+                        ]?.toLocaleString()}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {totalPriceByTransaction[
+                          transaction.id
+                        ]?.toLocaleString()}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {totalMomoAmountByTransaction[
+                          transaction.id
+                        ]?.toLocaleString()}
+                      </td>
+                      <td className="p-4 space-x-2 whitespace-nowrap">
+                        <button
+                          type="button"
+                          id="updateProductButton"
+                          data-drawer-target="drawer-update-product-default"
+                          data-drawer-show="drawer-update-product-default"
+                          aria-controls="drawer-update-product-default"
+                          data-drawer-placement="right"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-500 hover:bg-green-400 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                          onClick={() => handleClickAction(transaction)}
+                        >
+                          <MdModeEdit />
+                        </button>
+                        {showTransactionModel && selectedUser && (
+                          <EditTransactionModel
+                            transaction={selectedUser}
+                            onClose={() => setShowTransactionModel(false)}
+                            onSubmit={handlePasswordUpdate}
+                          />
                         )}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.parchment_lot_id}
+
+                        <button
+                          type="button"
+                          id="deleteProductButton"
+                          onClick={() =>
+                            navigate(
+                              `/user-administaration/access-controll/mobile-access/${staff.id}`
+                            )
+                          }
+                          data-drawer-target="drawer-delete-product-default"
+                          data-drawer-show="drawer-delete-product-default"
+                          aria-controls="drawer-delete-product-default"
+                          data-drawer-placement="right"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-500 rounded-lg hover:bg-red-300 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
+                        >
+                          <RiDeleteBin6Line />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -566,11 +603,11 @@ const TransactionDetailsTable = () => {
             </span>{" "}
             -{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {Math.min(currentPage * itemsPerPage, filteredTransaction?.length)}
+              {Math.min(currentPage * itemsPerPage, journals?.length)}
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {filteredTransaction?.length}
+              {journals?.length}
             </span>
           </span>
         </div>

@@ -21,7 +21,7 @@ const AccessControlTable = () => {
   useEffect(() => {
     dispatch(getSingleUserById(userId.userId));
   }, [dispatch]);
-  // console.log("userId", user?.data.Name_Full)
+  console.log("userId", userId.userId)
   useEffect(() => {
     if (user) {
       setFetchedUser(user?.data);

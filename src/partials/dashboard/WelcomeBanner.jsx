@@ -10,8 +10,6 @@ function WelcomeBanner() {
 
   const { token, decodedToken } = useSelector((state) => state.fetchToken);
   const [currentPage, setCurrentPage] = useState('dashboard');
-  console.log(decodedToken)
-  console.log(token)
 const userId = useParams()
 const journalId = useParams()
 

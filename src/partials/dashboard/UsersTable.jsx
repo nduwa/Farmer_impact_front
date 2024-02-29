@@ -102,6 +102,7 @@ const UsersTable = () => {
     setSelectedUser(null);
     setShowPasswordModel(true);
   };
+
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",

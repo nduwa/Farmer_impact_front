@@ -15,8 +15,6 @@ function DropdownProfile({
   const dropdown = useRef(null);
   const navigate = useNavigate();
   const { token, decodedToken } = useSelector((state) => state.fetchToken);
-  console.log(decodedToken)
-  console.log(token)
 
 const dispatch = useDispatch()
 useEffect(() => {
