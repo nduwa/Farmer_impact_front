@@ -6,14 +6,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchAllTransactions } from "../../redux/actions/coffeePurchase/allTransactionsAction";
-import { fetchAllStaff } from "../../redux/actions/coffeePurchase/allTransactionsAction";
+import { fetchAllTransactions } from "../../redux/actions/transactions/allTransactions.action";
+import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
 
 const UserTransactionsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [allTransactions, setAllTransactions] = useState([]);
-  const { transactions } = useSelector((state) => state.fetchAllStaff);
+  const { transactions,loading } = useSelector((state) => state.fetchAllTransactions);
   const [allStaff, setAllStaff] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState();
@@ -42,6 +42,10 @@ const UserTransactionsTable = () => {
     }
   }, [staffs]);
   console.log("transactionWEFSERFERs", allStaff);
+if(loading)
+{
+  return <p className=" text-center">..Loading..</p>
+}
 
   const handleSearch = (e) => {
     const searchItem = e.target.value;
@@ -65,15 +69,6 @@ const UserTransactionsTable = () => {
     return uniqueValues;
   };
 
-  // const filteredTransaction = searchQuery
-  //   ? allTransactions?.filter((transaction) =>
-  //       Object.values(transaction).some(
-  //         (value) =>
-  //           typeof value === "string" &&
-  //           value.toLowerCase().includes(searchQuery?.toLowerCase())
-  //       )
-  //     )
-  //   : allTransactions;
 
   const filteredTransaction = searchQuery
     ? getUniqueValues(
@@ -122,7 +117,7 @@ const UserTransactionsTable = () => {
   // Call the calculateTotalKilogramsByJournal function to get the sum
   const sumByJournal = calculateTotalKilogramsByJournal();
 
-  console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
+
 
   const calculateTotalPrice = () => {
     const totalPriceByJournal = {};
@@ -147,7 +142,7 @@ const UserTransactionsTable = () => {
   
   const totalPriceByJournal = calculateTotalPrice();
 
-  console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
+
 
   const sumFloatersKG = () => {
     const sum = {};
@@ -203,13 +198,14 @@ const UserTransactionsTable = () => {
   const allPaperReceipts = allTransactions.map(
     (transaction) => transaction.paper_receipt
   );
-  console.log("paperr", allPaperReceipts);
+console.log("alllll",allPaperReceipts)
 
   const isUniquePaperSlip = (paperReceipt) => {
     const occurrences = allPaperReceipts.filter(
       (value) => value === paperReceipt
     ).length;
-    console.log("occccccc", occurrences);
+    console.log("occurences",occurrences)
+   
 
     return occurrences === 1;
   };
@@ -351,7 +347,7 @@ const UserTransactionsTable = () => {
                       className="hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {isUniquePaperSlip ? (
+                        {isUniquePaperSlip(transaction.paper_receipt) ? (
                           <button className="w-8 h-8 rounded-full bg-green-500 text-white  flex items-center justify-center">
                             i
                           </button>

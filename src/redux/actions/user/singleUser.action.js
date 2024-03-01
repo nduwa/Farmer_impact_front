@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { toast } from 'react-toastify';
-import { getUser } from '../../api/userApi';
-import { fetchFail, fetchPending, fetchSuccess } from '../slices/singleUserSlice';
+import { getUser } from '../../../api/userApi';
+import { fetchFail, fetchPending,fetchSuccess } from '../../slices/user/singleUserSlice';
 
 
 

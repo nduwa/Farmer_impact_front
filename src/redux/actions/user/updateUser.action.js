@@ -1,8 +1,7 @@
 /* eslint-disable */
 import { toast } from 'react-toastify';
-import { updateUser } from '../../api/userApi';
-import { updateFail, updatePending, updateSuccess } from '../slices/updateUserSlice';
-
+import { updateUser } from '../../../api/userApi';
+import { updatePending, updateFail, updateSuccess } from '../../slices/user/updateUserSlice';
 
 
 

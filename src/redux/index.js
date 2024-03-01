@@ -1,26 +1,35 @@
 import { configureStore } from "@reduxjs/toolkit";
-import UserSlice from "./slices/userSlice";
-import login from '../redux/slices/AuthSlice'
-import users from '../redux/slices/UsersSlice'
-import fetchTokenSlice from "./slices/fetchTokenSlice";
-import updateUserSlice from "./slices/updateUserSlice";
-
-import getSingleUserSlice from './slices/singleUserSlice'
+// import UserSlice from "./slices/userSlice";
+import login from '../redux/slices/auth/loginSlice'
+import users from '../redux/slices/user/allUsersSlice'
+import fetchTokenSlice from "../redux/slices/auth/fetchTokenSlice";
+import updateUserSlice from "../redux/slices/user/updateUserSlice";
+import getSingleUserSlice from '../redux/slices/user/singleUserSlice'
 import fetchAllModulesSlice from '../redux/slices/accessModules/getAllModulesSlice'
-import logoutSlice from "./slices/logoutSlice";
-import fetchAllStaffSlice from './slices/coffeePurchase/allTransactionSlice'
+import logoutSlice from '../redux/slices/auth/logoutSlice'
+import fetchAllStaffSlice from "./slices/staff/fetchAllStaffSlice";
+import allTransactionsSlice from "./slices/transactions/allTransactionsSlice";
+import removeTransactionSlice from "./slices/transactions/removeTransactionSlice";
+import transactionByJournalSlice from "./slices/transactions/transactionByJournalSlice";
+import updateTransactionSlice from "./slices/transactions/updateTransaction";
 const store = configureStore({
   reducer: {
-    user: UserSlice.reducer,
+    // user: UserSlice.reducer,
     login,
     users,
     fetchToken:fetchTokenSlice,
     updateUser:updateUserSlice,
-
     fetchSingleUser:getSingleUserSlice,
     fetchAllModules:fetchAllModulesSlice,
     logout:logoutSlice,
-    fetchAllStaff:fetchAllStaffSlice
+    fetchAllStaff:fetchAllStaffSlice,
+    fetchAllTransactions:allTransactionsSlice,
+    removeTransaction:removeTransactionSlice,
+    fetchAllTransactionsByJournal:transactionByJournalSlice,
+    updateTransaction:updateTransactionSlice,
+    
+
+
  
   },
 });

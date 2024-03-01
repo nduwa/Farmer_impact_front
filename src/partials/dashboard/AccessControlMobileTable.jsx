@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getSingleUserById } from "../../redux/actions/singleUserAction";
-import { getModules } from "../../redux/actions/accessModules/getAllModulesAction";
+import { getSingleUserById } from "../../redux/actions/user/singleUser.action";
+import { getModules } from "../../redux/actions/accessModules/getAllModules.action";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { PiUsersFourDuotone } from "react-icons/pi";
@@ -20,7 +20,6 @@ const AccessControlMobileTable = () => {
   useEffect(() => {
     dispatch(getSingleUserById(userId.userId));
   }, [dispatch]);
-  console.log("userId", user?.data.Name_Full);
   useEffect(() => {
     if (user) {
       setFetchedUser(user?.data);
@@ -30,13 +29,13 @@ const AccessControlMobileTable = () => {
   useEffect(() => {
     dispatch(getModules());
   }, [dispatch]);
-  // console.log("userId", user?.data.Name_Full)
+
   useEffect(() => {
     if (modules) {
       const platforms = modules.data.map((module) => module.platform);
-      console.log("platforms", platforms);
+      
       setRetrievedModules(modules.data);
-      console.log("retttt", retrievedModules);
+      
     }
   }, [user]);
 
@@ -44,7 +43,7 @@ const AccessControlMobileTable = () => {
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 mb-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
         <p className="mb-6 ml-20">
-          Mobile access control for <b>{fetchedUser?.Name_Full}</b>
+          Mobile access control for <b>{fetchedUser?.Name}</b>
         </p>
         <div className="   items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center ml-20 mb-4 sm:mb-0 gap-24">
@@ -126,7 +125,7 @@ const AccessControlMobileTable = () => {
                 </tbody>
                 <button
                   className="bg-green-400 mt-4   w-48 h-10 flex items-center justify-center rounded-lg"
-                  // onClick={handlePasswordSubmit}
+                
                 >
                   Save Access Control
                 </button>

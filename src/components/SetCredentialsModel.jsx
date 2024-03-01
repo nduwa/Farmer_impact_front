@@ -1,6 +1,6 @@
 import React, { useState ,useEffect} from "react";
 import { AiTwotoneCloseCircle } from "react-icons/ai";
-import { updateExistingUser } from "../redux/actions/updateUserAction";
+import { updateExistingUser } from "../redux/actions/user/updateUser.action";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { ToastContainer } from "react-toastify";

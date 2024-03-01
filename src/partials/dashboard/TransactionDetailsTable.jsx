@@ -5,30 +5,72 @@ import AddItemDrawer from "./AddItemDrawer";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import EditTransactionModel from "../../components/EditTransactionModel";
-import "react-toastify/dist/ReactToastify.css";
+import RemoveTransactionModel from "../../components/RemoveTransactionModel";
 
-import { fetchAllTransactionsByJournal } from "../../redux/actions/coffeePurchase/allTransactionsAction";
 
+import { fetchAllTransactionsByJournal } from "../../redux/actions/transactions/transactionsByJournal.action";
+import { removeTransaction } from "../../redux/actions/transactions/removeTransaction.action";
 import { MdModeEdit } from "react-icons/md";
 
 import { RiDeleteBin6Line } from "react-icons/ri";
 
+
 const TransactionDetailsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [journals, setJournals] = useState([]);
-
-  const { journal } = useSelector((state) => state.fetchAllStaff);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [showTransactionModel, setShowTransactionModel] = useState(false);
   const token = localStorage.getItem("token");
+
   const itemsPerPage = 20;
   const journalId = useParams();
 
-  console.log(journal);
+
+  const [journals, setJournals] = useState([]);
+
+  const { journal } = useSelector((state) => state.fetchAllTransactionsByJournal);
+  const { removeTransactionData } = useSelector((state) => state.fetchAllStaff);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [transactionIdToDelete, setTransactionIdToDelete] = useState(null);
+  const [showTransactionModel, setShowTransactionModel] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const openModal = (transactionId) => {
+    setTransactionIdToDelete(transactionId)
+   
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setTransactionIdToDelete(null)
+    setModalOpen(false);
+  };
+  
+  const handleConfirmDelete = (transactionId) => {
+    
+    if (transactionIdToDelete) {
+      dispatch(removeTransaction(token, transactionIdToDelete));
+    }
+  
+    if(removeTransactionData){
+      
+    }
+  
+    console.log(`Deleting transaction with ID: ${transactionId}`);
+    closeModal(); // Close the modal after deletion
+  };
+  useEffect(() => {
+    
+    if (removeTransactionData) {
+      dispatch(
+        fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", ""))
+      );
+    }
+  }, [removeTransactionData,dispatch]); 
+
+ 
+
+  
 
   useEffect(() => {
     dispatch(
@@ -41,6 +83,7 @@ const TransactionDetailsTable = () => {
       setJournals(journal.data);
     }
   }, [journal]);
+ 
 
   const calculateTotalKilogramsByJournal = () => {
     const sumByJournal = {};
@@ -62,23 +105,23 @@ const TransactionDetailsTable = () => {
     return sumByJournal;
   };
 
-  // Call the calculateTotalKilogramsByJournal function to get the sum
+
   const sumByJournal = calculateTotalKilogramsByJournal();
 
-  // console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
+ 
 
   const calculateTotalPrice = () => {
     const totalPriceByTransaction = {};
 
     journals.forEach((transaction) => {
       const transactionId = transaction.id;
-      const cash = transaction.cash_paid || 0;
+      const totalPrice = transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price  || 0;
 
       if (!totalPriceByTransaction[transactionId]) {
         totalPriceByTransaction[transactionId] = 0;
       }
 
-      totalPriceByTransaction[transactionId] += cash;
+      totalPriceByTransaction[transactionId] = totalPrice;
     });
 
     return totalPriceByTransaction;
@@ -105,7 +148,7 @@ const TransactionDetailsTable = () => {
 
   const totalMomoAmountByTransaction = calculateTotalMomoAmount();
 
-  // console.log("Sum of Kilograms by JOURNAL#:", sumByJournal);
+
 
   const calculateTotalKilogramsPurchased = (transaction) => {
     const certifiedKG =
@@ -140,7 +183,7 @@ const TransactionDetailsTable = () => {
     const occurrences = allPaperReceipts.filter(
       (value) => value === paperReceipt
     ).length;
-    console.log("occccccc", occurrences);
+
 
     return occurrences === 1;
   };
@@ -159,7 +202,7 @@ const TransactionDetailsTable = () => {
       siteCollector: "",
     };
 
-    // Iterate through transactions
+   
     journals.forEach((transaction) => {
       totalValues.transactionDate = transaction.transaction_date;
 
@@ -174,7 +217,7 @@ const TransactionDetailsTable = () => {
       }
       totalValues.totalFloaters += transaction.bad_kilograms;
       totalValues.averagePrice = transaction.unitprice;
-      totalValues.totalCoffeeValue += transaction.cash_paid;
+      totalValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price;
       totalValues.totalKgs =
         totalValues.totalCertified +
         totalValues.totalUncertified +
@@ -184,7 +227,6 @@ const TransactionDetailsTable = () => {
     return totalValues;
   };
 
-  // Call the calculateTotalValues function to get the total values
   const totalValues = calculateTotalValues();
 
   const formatDate = (dateString) => {
@@ -203,13 +245,18 @@ const TransactionDetailsTable = () => {
     setSelectedUser(transaction);
     setShowTransactionModel(true);
   };
-  console.log("rwtytry",selectedUser)
+ 
 
-  const handlePasswordUpdate = (userId, newPassword) => {
+  const handleTransactionUpdate = (userId, newPassword) => {
    
     setSelectedUser(null);
     setShowTransactionModel(true);
   };
+
+
+  const handleAdditionalInfoChange = ()=>{
+    
+  }
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
@@ -217,8 +264,8 @@ const TransactionDetailsTable = () => {
           Site collector Daily Journal
         </span>
         <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
-          <div className="flex  items-center mb-4 -ml-3 sm:mb-0 ">
-            <table className="min-w-full  divide-y divide-gray-200 ml-14 mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
+          <div className="flex w-full items-center mb-4  sm:mb-0 ">
+            <table className="min-w-full  divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
               <thead className=" dark:bg-gray-700">
                 <tr className="border-b">
                   <th
@@ -448,7 +495,7 @@ const TransactionDetailsTable = () => {
                       className="hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {isUniquePaperSlip ? (
+                        {isUniquePaperSlip(transaction.paper_receipt) ? (
                           <button className="w-8 h-8 rounded-full bg-green-500 text-white  flex items-center justify-center">
                             i
                           </button>
@@ -528,7 +575,7 @@ const TransactionDetailsTable = () => {
                           <EditTransactionModel
                             transaction={selectedUser}
                             onClose={() => setShowTransactionModel(false)}
-                            onSubmit={handlePasswordUpdate}
+                            onSubmit={handleTransactionUpdate}
                           />
                         )}
 
@@ -536,9 +583,7 @@ const TransactionDetailsTable = () => {
                           type="button"
                           id="deleteProductButton"
                           onClick={() =>
-                            navigate(
-                              `/user-administaration/access-controll/mobile-access/${staff.id}`
-                            )
+                           openModal(transaction.id)
                           }
                           data-drawer-target="drawer-delete-product-default"
                           data-drawer-show="drawer-delete-product-default"
@@ -548,6 +593,13 @@ const TransactionDetailsTable = () => {
                         >
                           <RiDeleteBin6Line />
                         </button>
+                        
+                        <RemoveTransactionModel
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirmDelete={handleConfirmDelete}
+        transactionId={transactionIdToDelete}
+      />
                       </td>
                     </tr>
                   ))}
@@ -612,6 +664,98 @@ const TransactionDetailsTable = () => {
           </span>
         </div>
       </div>
+      <p className="mt-3 font-bold">Additional Info</p>
+      <div className="items-center  bg-white justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
+          <div className="flex w-full gap-5 mb-4  sm:mb-0 ">
+          <table className="min-w-[70%] divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
+              <thead className=" dark:bg-gray-700">
+                
+                <tr className="border-b hover:bg-gray-100">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                   Commission for traceable certified coffee
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                   10
+                  </td>
+                 
+                </tr>
+                <tr className="border-b hover:bg-gray-100">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                   Commission for traceable un-certified coffee
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    10
+                  </td>
+                 
+                </tr>
+                <tr className="border-b hover:bg-gray-100">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                   Commission for untraceable coffee
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                  10
+                  </td>
+                 
+                </tr>
+                <tr className="border-b hover:bg-gray-100">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                  Transport Fee (Cherries)
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                   10
+                  </td>
+                 
+                </tr>
+                <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                 Transport Fee (Floaters)
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    10
+                  </td>
+                 
+                </tr>
+                <tr className="border-b hover:bg-gray-100">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                   Total site collector payment
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                  50
+                  </td>
+                 
+                </tr>
+              </thead>
+<div className="flex justify-center items-center">
+  <button className="bg-green-500 text-white p-2 m-2">Save Data</button>
+</div>           
+ </table>
+          
+            <div className=" mt-8 ">
+            <input type="file" name="" id="" />
+            <button className=" border border-green-500 hover:bg-green-500 hover:text-white text-green-500 p-1 mt-1">upload Joulnal</button>
+
+          </div>
+          </div>
+        
+        </div>
 
       {/* update drawer */}
       <UpdateItemDrawer />

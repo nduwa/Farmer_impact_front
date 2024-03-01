@@ -51,3 +51,43 @@ export const allStaff = async () => {
         });
     });
   };
+
+
+  export const removeTransactionById = (token, id) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put(`${url}/coffeePurchase/dailyJournal/transaction/${id}`, null, {
+          headers: {
+            auth_token: ` ${token}`,
+          },
+        })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          if (error.response.data !== undefined) {
+            reject(error.response.data);
+          }
+          reject(error);
+        });
+    });
+  };
+
+
+
+
+
+
+  export const updateTransactionById = (token,id,data) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put(`${url}/coffeePurchase/dailyJournal/transaction/update/${id}`,data,{
+          headers: { auth_token: ` ${token}` },
+        })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          if (error.response?.data !== undefined) {
+            reject(error.response.data);
+          }
+          reject(error);
+        });
+    });
+  };

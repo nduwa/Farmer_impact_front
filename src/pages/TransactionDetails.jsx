@@ -3,7 +3,8 @@ import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import WelcomeBanner from "../partials/dashboard/WelcomeBanner";
 import TransactionDetailsTable from "../partials/dashboard/TransactionDetailsTable";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function TransactionDetails() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -33,6 +34,7 @@ function TransactionDetails() {
 
               <TransactionDetailsTable />
             </div>
+            <ToastContainer/>
           </div>
         </main>
       </div>

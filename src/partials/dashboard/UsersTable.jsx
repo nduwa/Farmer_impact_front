@@ -4,8 +4,8 @@ import DeleteItemDrawer from "./DeleteItemDrawer";
 import AddItemDrawer from "./AddItemDrawer";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllUsers } from "../../redux/actions/UsersAction";
-import { fetchAllStaff } from "../../redux/actions/coffeePurchase/allTransactionsAction";
+import {fetchAllUsers} from '../../redux/actions/user/Users.action'
+import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
 import { RiKey2Line } from "react-icons/ri";
 import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { IoIosPhonePortrait } from "react-icons/io";

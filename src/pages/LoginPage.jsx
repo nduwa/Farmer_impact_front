@@ -3,7 +3,7 @@ import logo_IMG from "../images/logo.jpg";
 import banner_IMG from "../images/banner_login.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../redux/actions/AuthAction";
+import { login } from '../redux/actions/auth/login.action';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

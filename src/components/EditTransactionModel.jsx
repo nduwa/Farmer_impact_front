@@ -1,62 +1,89 @@
 import React, { useState, useEffect } from "react";
 import { AiTwotoneCloseCircle } from "react-icons/ai";
-import { updateExistingUser } from "../redux/actions/updateUserAction";
+import { updateTransaction } from "../redux/actions/transactions/updateTransaction.action";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
+import { fetchAllTransactionsByJournal } from "../redux/actions/transactions/transactionsByJournal.action";
 import "react-toastify/dist/ReactToastify.css";
+import { useParams } from "react-router-dom";
 
+
+const token = localStorage.getItem("token")
 export default function EditTransactionModel({
   transaction,
   onClose,
   onSubmit,
 }) {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
   const dispatch = useDispatch();
-  const { upUser } = useSelector((state) => state.updateUser);
-const [transactions, setTransactions] = useState()
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
+  const journalId = useParams();
+  const [editedTransaction, setEditedTransaction] = useState({
+    lotnumber: transaction.lotnumber,
+    paper_receipt: transaction.paper_receipt,
+    transaction_date: transaction.transaction_date,
+    certifiedKG: transaction.certified === 1 ? transaction.kilograms : 0,
+    uncertifiedKG: transaction.certified === 1 ? 0 : transaction.kilograms,
+    unitprice: transaction.unitprice,
+    bad_kilograms: transaction.bad_kilograms,
+    bad_unit_price: transaction.bad_unit_price,
+    kilograms:transaction.kilograms,
+    certificationType:
+      transaction.certification === "CP"
+        ? "Cafe Practice"
+        : transaction.certification === "RN"
+          ? "Rain Forest"
+          : transaction.certification === "NC"
+            ? "Non Certified"
+            : "",
+  });
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedTransaction((prevTransaction) => ({
+      ...prevTransaction,
+      [name]: value,
+    }));
   };
 
-  // const handlePasswordSubmit = async (e) => {
-  //   if (password === confirmPassword) {
-  //     try {
-  //       dispatch(updateExistingUser(user.id, { password }));
-  //       toast.success("user updated successfully");
 
-  //       setPassword("");
-  //       setConfirmPassword("");
-  //       onClose();
-  //       onSubmit(password, confirmPassword);
-  //     } catch (error) {
-  //       // Handle any errors if needed
-  //       console.error("Update failed:", error);
-  //       toast.error("Failed to update user");
-  //     }
-  //   } else {
-  //     toast.error("Passwords don't match");
-  //   }
-  // };
+ 
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+       dispatch(updateTransaction(token, transaction.id, editedTransaction));
+      toast.success("Transaction updated successfully");
+      onClose();
+      onSubmit(editedTransaction);
+  
+      // Fetch transactions after successful update
+      dispatch(fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", "")));
+  
+    } catch (error) {
+      console.error("Update failed:", error);
+      toast.error("Failed to update transaction");
+    }
+  };
+  
+
+
 
 
   const calculateTotalPrice = () => {
     let totalPriceByTransaction;
 
-    
-      // const transactionId = transaction.id;
-      const cash = transaction.cash_paid || 0;
 
-      if (!totalPriceByTransaction) {
-        totalPriceByTransaction = 0;
-      }
+    // const transactionId = transaction.id;
+    const totalPrice = transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price || 0;
 
-      totalPriceByTransaction += cash;
-    
+    if (!totalPriceByTransaction) {
+      totalPriceByTransaction = 0;
+    }
+
+    totalPriceByTransaction= totalPrice;
+
 
     return totalPriceByTransaction;
   };
@@ -64,125 +91,136 @@ const [transactions, setTransactions] = useState()
   const totalPriceByTransaction = calculateTotalPrice();
 
   return (
-    <div className="fixed inset-0  flex items-center justify-center py-96  overflow-y-auto z-50">
-      {/* Background overlay */}
-      <div className="fixed inset-0 bg-black opacity-5"></div>
+    <div className="fixed inset-0 bg-black bg-opacity-5 overflow-y-auto flex items-center justify-center z-50">
+      <div className="bg-white  rounded-lg shadow-md mt-auto">
 
-      {/* Modal */}
-      <div className="bg-white  rounded-lg text-left   shadow-l transform transition-all sm:max-w-lg sm:w-full relative z-10 ">
+        {/* Modal */}
+
         <div className="flex justify-end ">
           <button onClick={onClose}>
             <AiTwotoneCloseCircle />
           </button>
         </div>
-        {/* Modal content */}
-        {/* <div className="bg-white p-4 flex flex-col  "> */}
-          {/* Display fields from API for the selected user */}
-          <div className=" px-16 space-y-4  " >
-          <p className="">Edit Transaction</p>
+
+        <div className=" px-16 space-y-3 mb-4" >
+          <p className="text-green-500">Edit Transaction</p>
           <hr className="mb-4 border border-gray-200 " />
+          <p>Lot Number</p>
           <input
             className="rounded-lg   w-80"
             type="text"
-            value={transaction.lotnumber}
-            // readOnly
+            value={editedTransaction.lotnumber}
+            readOnly
           />
-          <br />
+
+          <p>Paper Receipt</p>
 
           <input
-              className="rounded-lg   w-80"
+            className="rounded-lg   w-80"
             type="text"
-            value={transaction.paper_receipt}
-            // readOnly
+            value={editedTransaction.paper_receipt}
+            readOnly
           />
-          <br />
+
+          <p>Transaction Date</p>
+
           <input
-             className="rounded-lg   w-80"
+            className="rounded-lg   w-80"
             type="text"
-            value={transaction.transaction_date}
-            // readOnly
+            value={editedTransaction.transaction_date}
+            onChange={handleInputChange}
           />
-          <br />
-          {/* Input fields for password */}
+
+
+          <p>kilograms</p>
+
           <input
             type="text"
-            value=     {transaction.certified === 1
-              ? transaction.kilograms
-              : 0}
-            // onChange={handlePasswordChange}
-            placeholder="password"
+            name="kilograms"
+            value={editedTransaction.kilograms}
+            onChange={handleInputChange}
+
+            placeholder=""
             className="rounded-lg   w-80"
           />
-          <br />
+
+          <p>Unit Price</p>
+
+          <input
+            className="rounded-lg w-80"
+            type="text"
+            name="unitprice"
+            value={editedTransaction.unitprice}
+            onChange={handleInputChange}
           
-          <input
-            type="text"
-            value={transaction.certified === 1 ? 0 : transaction.kilograms}
-            // onChange={handleConfirmPasswordChange}
-            placeholder="confirm password"
-            className="rounded-lg w-80"
           />
-          <br />
-       
-          
+
+          <p>Total Price</p>
+
           <input
             className="rounded-lg w-80"
+
             type="text"
-            value={transaction.unitprice}
-            // readOnly
+            value={totalPriceByTransaction.toLocaleString()}
+          // readOnly
           />
-          <br />
-          <input
-            className="rounded-lg w-80"
-            type="text"
-            value= {totalPriceByTransaction.toLocaleString()}
-            // readOnly
-          />
-          <br />
+
+          <p>Floaters</p>
+
           <input
             type="text"
-            value={transaction.bad_kilograms}
-            // onChange={handleConfirmPasswordChange}
-            placeholder="confirm password"
+            name="bad_kilograms"
+            value={editedTransaction.bad_kilograms}
+
+            onChange={handleInputChange}
+
+            placeholder=""
             className="rounded-lg w-80"
           />
 
-          <br />
+
+          <p>Price Per Floater</p>
+
           <input
             type="text"
-            value={transaction.bad_unit_price}
-            // onChange={handleConfirmPasswordChange}
-            placeholder="confirm password"
+            name="bad_unit_price"
+            value={editedTransaction.bad_unit_price}
+
+            onChange={handleInputChange}
+
+            placeholder=""
             className="rounded-lg w-80"
           />
-          <br/>
-           <input
-            type="text"
-            value={transaction.certification=== "CP" ? "Cafe Practice" : transaction.certification=== "RN"? "Rain Forest" : transaction.certification === "NC" ? "Non Certified":""}
+          <p>Certification Type</p>
 
-            
-            // onChange={handleConfirmPasswordChange}
-            placeholder="confirm password"
+          <select
+            name="certificationType"
+            value={editedTransaction.certificationType}
+            onChange={handleInputChange}
             className="rounded-lg w-80"
-          />
-         
-          
+          >
+            <option value="CP">Cafe Practice</option>
+            <option value="RN">Rain Forest</option>
+            <option value="NC">Non Certified</option>
+          </select>
 
-          <br />
+
+
+
 
           <ToastContainer />
 
           {/* Button to submit password */}
           <button
-            className="bg-green-400 w-48 h-10 flex items-center justify-center rounded-lg"
-            // onClick={handlePasswordSubmit}
+            className="bg-green-400 w-48 h-10  flex items-center justify-center rounded-lg"
+            onClick={handleEditSubmit}
           >
             Edit User Account
           </button>
-          </div>
-         
         </div>
-      {/* </div> */}
+
+      </div>
     </div>
+
   );
 }
