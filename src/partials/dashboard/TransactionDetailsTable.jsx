@@ -6,14 +6,14 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import EditTransactionModel from "../../components/EditTransactionModel";
 import RemoveTransactionModel from "../../components/RemoveTransactionModel";
-
-
 import { fetchAllTransactionsByJournal } from "../../redux/actions/transactions/transactionsByJournal.action";
 import { removeTransaction } from "../../redux/actions/transactions/removeTransaction.action";
 import { MdModeEdit } from "react-icons/md";
-
 import { RiDeleteBin6Line } from "react-icons/ri";
-
+import { addCommission } from "../../redux/actions/transactions/commission.action";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TransactionDetailsTable = () => {
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ const TransactionDetailsTable = () => {
   const [journals, setJournals] = useState([]);
 
   const { journal } = useSelector((state) => state.fetchAllTransactionsByJournal);
+  const { commission } = useSelector((state) => state.commission);
   const { removeTransactionData } = useSelector((state) => state.fetchAllStaff);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +35,17 @@ const TransactionDetailsTable = () => {
   const [transactionIdToDelete, setTransactionIdToDelete] = useState(null);
   const [showTransactionModel, setShowTransactionModel] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [additionalInfo, setAdditionalInfo] = useState({
+    commissionCertified:10,
+    commissionUncertified:10,
+    commissionUntraced:10,
+    transportCherry:10,
+    transportFloaters:10,
 
+  })
+    const total= additionalInfo.commissionCertified + additionalInfo.commissionUncertified +additionalInfo.commissionUntraced+ additionalInfo.transportCherry + additionalInfo.transportFloaters
+     
+// console.log("adddd", commission.commissionCertified)
   const openModal = (transactionId) => {
     setTransactionIdToDelete(transactionId)
    
@@ -219,7 +230,7 @@ const TransactionDetailsTable = () => {
       totalValues.averagePrice = transaction.unitprice;
       totalValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price;
       totalValues.totalKgs =
-        totalValues.totalCertified +
+      totalValues.totalCertified +
         totalValues.totalUncertified +
         totalValues.totalFloaters;
     });
@@ -228,6 +239,7 @@ const TransactionDetailsTable = () => {
   };
 
   const totalValues = calculateTotalValues();
+  const tatalCommission = commission?.commissionCertified * totalValues.totalCertified
 
   const formatDate = (dateString) => {
     const options = {
@@ -254,9 +266,32 @@ const TransactionDetailsTable = () => {
   };
 
 
-  const handleAdditionalInfoChange = ()=>{
-    
-  }
+  const handleAdditionalInfoChange = (e) => {
+    const { name, value } = e.target;
+    setAdditionalInfo((prevInfo) => ({
+      ...prevInfo,
+      [name]: value,
+    }));
+  };
+
+  const handleAdditionalInfoSubmit = async (e) => {
+    e.preventDefault();
+    try {
+       dispatch(addCommission(  additionalInfo));
+      // toast.success("commission");
+      console.log("fjvhdfv",additionalInfo)
+      // onClose();
+      // onSubmit(additionalInfo);
+  
+      // Fetch transactions after successful update
+      // dispatch(fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", "")));
+  
+    } catch (error) {
+      console.error("Update failed:", error);
+      // toast.error("Failed to update transaction");
+    }
+  };
+
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
@@ -400,7 +435,7 @@ const TransactionDetailsTable = () => {
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
                     <th scope="col" className="p-4">
-                      FLAG
+                      #
                     </th>
                     <th
                       scope="col"
@@ -669,83 +704,235 @@ const TransactionDetailsTable = () => {
           <div className="flex w-full gap-5 mb-4  sm:mb-0 ">
           <table className="min-w-[70%] divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
               <thead className=" dark:bg-gray-700">
-                
-                <tr className="border-b hover:bg-gray-100">
+                {!commission &&(
+                    <><><tr className="border-b hover:bg-gray-100">
                   <th
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                   Commission for traceable certified coffee
+                    Commission for traceable certified coffee
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                   10
+
+                    <input
+                      type="text"
+                      name="commissionCertified"
+
+                      value={additionalInfo.commissionCertified}
+
+                      placeholder=""
+                      className="rounded-lg   w-80"
+                      onChange={handleAdditionalInfoChange} />
+
                   </td>
-                 
-                </tr>
-                <tr className="border-b hover:bg-gray-100">
+
+                </tr><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Commission for traceable un-certified coffee
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input type="number"
+                        value={additionalInfo.commissionUncertified}
+                        className="rounded-lg w-80"
+                        name="commissionUncertified"
+                        onChange={handleAdditionalInfoChange} />
+
+                    </td>
+
+                  </tr></>
+                  {/* <tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Commission for untraceable coffee
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input type="number"
+                        value={additionalInfo.commissionUntraced}
+                        className="rounded-lg w-80"
+                        name="commissionUntraced"
+                        onChange={handleAdditionalInfoChange} />
+                    </td>
+
+                  </tr><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Transport Fee (Cherries)
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input type="number"
+                        value={additionalInfo.transportCherry}
+                        className="rounded-lg w-80"
+                        name="transportCherry"
+                        onChange={handleAdditionalInfoChange} />
+
+                    </td>
+
+                  </tr><tr className="border-b">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Transport Fee (Floaters)
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input
+                        type="number"
+                        value={additionalInfo.transportFloaters}
+                        className="rounded-lg w-80"
+                        onChange={handleAdditionalInfoChange}
+                        name="transportFloaters" />
+
+                    </td>
+
+                  </tr><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Total site collector payment
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input
+                        type="number"
+                        value={total}
+                        className="rounded-lg  w-80"
+                        name="commissionCertified"
+                        onChange={handleAdditionalInfoChange} />
+
+                    </td>
+
+                  </tr> */}
+                  <div className="flex justify-center items-center">
+                    <button
+                      className="bg-green-500 text-white p-2 m-2"
+                      onClick={handleAdditionalInfoSubmit}
+                    >Save Data</button>
+                  </div></> 
+
+                )}
+
+{commission &&(
+                    <><><tr className="border-b hover:bg-gray-100">
                   <th
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                   Commission for traceable un-certified coffee
+                    Commission for traceable certified coffee
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    10
+
+                    <input
+                      type="text"
+                      name="commissionCertified"
+
+                      value={additionalInfo.commissionCertified}
+
+                      placeholder=""
+                      className="rounded-lg   w-80"
+                      onChange={handleAdditionalInfoChange} />
+
                   </td>
-                 
-                </tr>
-                <tr className="border-b hover:bg-gray-100">
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                   Commission for untraceable coffee
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                  10
-                  </td>
-                 
-                </tr>
-                <tr className="border-b hover:bg-gray-100">
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                  Transport Fee (Cherries)
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                   10
-                  </td>
-                 
-                </tr>
-                <tr className="border-b">
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                 Transport Fee (Floaters)
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    10
-                  </td>
-                 
-                </tr>
-                <tr className="border-b hover:bg-gray-100">
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                   Total site collector payment
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                  50
-                  </td>
-                 
-                </tr>
+
+                </tr><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Commission for traceable un-certified coffee
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input type="number"
+                        value={tatalCommission}
+                        className="rounded-lg w-80"
+                        name="commissionUncertified"
+                        onChange={handleAdditionalInfoChange} />
+
+                    </td>
+
+                  </tr></><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Commission for untraceable coffee
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input type="number"
+                        value={additionalInfo.commissionUntraced}
+                        className="rounded-lg w-80"
+                        name="commissionUntraced"
+                        onChange={handleAdditionalInfoChange} />
+                    </td>
+
+                  </tr><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Transport Fee (Cherries)
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input type="number"
+                        value={additionalInfo.transportCherry}
+                        className="rounded-lg w-80"
+                        name="transportCherry"
+                        onChange={handleAdditionalInfoChange} />
+
+                    </td>
+
+                  </tr><tr className="border-b">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Transport Fee (Floaters)
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input
+                        type="number"
+                        value={additionalInfo.transportFloaters}
+                        className="rounded-lg w-80"
+                        onChange={handleAdditionalInfoChange}
+                        name="transportFloaters" />
+
+                    </td>
+
+                  </tr><tr className="border-b hover:bg-gray-100">
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                    >
+                      Total site collector payment
+                    </th>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                      <input
+                        type="number"
+                        value={total}
+                        className="rounded-lg  w-80"
+                        name="commissionCertified"
+                        onChange={handleAdditionalInfoChange} />
+
+                    </td>
+
+                  </tr><div className="flex justify-center items-center">
+                    <button
+                      className="bg-green-500 text-white p-2 m-2"
+                      onClick={handleAdditionalInfoSubmit}
+                    >Save Data</button>
+                  </div></> 
+
+                )}
+             
+             
               </thead>
-<div className="flex justify-center items-center">
-  <button className="bg-green-500 text-white p-2 m-2">Save Data</button>
-</div>           
+         
  </table>
           
             <div className=" mt-8 ">

@@ -95,6 +95,7 @@ const UsersTable = () => {
     setSelectedUser(user);
     setShowPasswordModel(true);
   };
+  console.log("seleeeee",selectedUser)
 
   const handlePasswordUpdate = (userId, newPassword) => {
     setPassword("");
