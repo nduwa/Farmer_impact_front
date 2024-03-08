@@ -36,14 +36,14 @@ const TransactionDetailsTable = () => {
   const [showTransactionModel, setShowTransactionModel] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState({
-    commissionCertified:10,
-    commissionUncertified:10,
+    commissionFee:10,
+    transportFee:10,
     commissionUntraced:10,
     transportCherry:10,
     transportFloaters:10,
 
   })
-    const total= additionalInfo.commissionCertified + additionalInfo.commissionUncertified +additionalInfo.commissionUntraced+ additionalInfo.transportCherry + additionalInfo.transportFloaters
+  const formatter = new Intl.NumberFormat('en-US');
      
 // console.log("adddd", commission.commissionCertified)
   const openModal = (transactionId) => {
@@ -239,7 +239,22 @@ const TransactionDetailsTable = () => {
   };
 
   const totalValues = calculateTotalValues();
-  const tatalCommission = commission?.commissionCertified * totalValues.totalCertified
+  const totalCommission = commission?.commissionFee * totalValues.totalKgs
+  const transportFeesCherry = commission?.transportFee * totalValues.totalCertified 
+  const transportFeesFloaters  = commission?.transportFee * totalValues.totalFloaters
+  const totals = totalCommission + transportFeesCherry + transportFeesFloaters
+
+
+
+const formatNumberWithCommas = (number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+
+const formattedTransportFeesCherry= formatNumberWithCommas(transportFeesCherry)
+console.log("formaaa",formattedTransportFeesCherry)
+
+
 
   const formatDate = (dateString) => {
     const options = {
@@ -379,7 +394,7 @@ const TransactionDetailsTable = () => {
                     CERTIFIED KG
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {totalValues.totalCertified}
+                    {totalValues.totalCertified.toLocaleString()}
                   </td>
                 </tr>
                 <tr className="border-b">
@@ -637,7 +652,56 @@ const TransactionDetailsTable = () => {
       />
                       </td>
                     </tr>
+                    
                   ))}
+                  <tr>
+                  <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+                      TOTALS
+                      </td>
+                      <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+
+                    </td>
+                    <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+
+                    </td>
+                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+
+                    </td>
+                    <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                      {totalValues.totalCertified.toLocaleString()}</td>
+                      <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                      {totalValues.totalUncertified}</td>
+                      <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+
+                    </td>
+                    <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                        {totalValues.totalFloaters.toLocaleString()}</td>
+                        <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                        </td>
+                        <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                       {totalValues.totalKgs.toLocaleString()}</td>
+                       <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+                         </td>
+                          <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                         {totalValues.totalCoffeeValue.toLocaleString()}</td>
+                         <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+                         {totalValues.totalCoffeeValue.toLocaleString()}
+                         </td>
+                         <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white"> 
+                    </td>
+                    <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
+
+                       </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -710,15 +774,15 @@ const TransactionDetailsTable = () => {
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    Commission for traceable certified coffee
+                    Commission Fees
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
 
                     <input
                       type="text"
-                      name="commissionCertified"
+                      name="commissionFee"
 
-                      value={additionalInfo.commissionCertified}
+                      value={additionalInfo.commissionFee}
 
                       placeholder=""
                       className="rounded-lg   w-80"
@@ -731,13 +795,13 @@ const TransactionDetailsTable = () => {
                       scope="col"
                       className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                     >
-                      Commission for traceable un-certified coffee
+                      Transport Fees
                     </th>
                     <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
                       <input type="number"
-                        value={additionalInfo.commissionUncertified}
+                        value={additionalInfo.transportFee}
                         className="rounded-lg w-80"
-                        name="commissionUncertified"
+                        name="transportFee"
                         onChange={handleAdditionalInfoChange} />
 
                     </td>
@@ -824,7 +888,7 @@ const TransactionDetailsTable = () => {
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    Commission for traceable certified coffee
+                    Commission
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
 
@@ -832,46 +896,17 @@ const TransactionDetailsTable = () => {
                       type="text"
                       name="commissionCertified"
 
-                      value={additionalInfo.commissionCertified}
+                      value={totalCommission.toLocaleString()}
 
                       placeholder=""
                       className="rounded-lg   w-80"
-                      onChange={handleAdditionalInfoChange} />
+                      // onChange={handleAdditionalInfoChange}
+                       />
 
                   </td>
 
-                </tr><tr className="border-b hover:bg-gray-100">
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                    >
-                      Commission for traceable un-certified coffee
-                    </th>
-                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input type="number"
-                        value={tatalCommission}
-                        className="rounded-lg w-80"
-                        name="commissionUncertified"
-                        onChange={handleAdditionalInfoChange} />
-
-                    </td>
-
-                  </tr></><tr className="border-b hover:bg-gray-100">
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                    >
-                      Commission for untraceable coffee
-                    </th>
-                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input type="number"
-                        value={additionalInfo.commissionUntraced}
-                        className="rounded-lg w-80"
-                        name="commissionUntraced"
-                        onChange={handleAdditionalInfoChange} />
-                    </td>
-
-                  </tr><tr className="border-b hover:bg-gray-100">
+                </tr>
+                <tr className="border-b hover:bg-gray-100">
                     <th
                       scope="col"
                       className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
@@ -879,15 +914,17 @@ const TransactionDetailsTable = () => {
                       Transport Fee (Cherries)
                     </th>
                     <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input type="number"
-                        value={additionalInfo.transportCherry}
+                      <input type="text"
+                        value={transportFeesCherry.toLocaleString()}
                         className="rounded-lg w-80"
                         name="transportCherry"
-                        onChange={handleAdditionalInfoChange} />
+                        // onChange={handleAdditionalInfoChange}
+                         />
 
                     </td>
 
-                  </tr><tr className="border-b">
+                  </tr>
+                  <tr className="border-b">
                     <th
                       scope="col"
                       className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
@@ -896,15 +933,21 @@ const TransactionDetailsTable = () => {
                     </th>
                     <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
                       <input
-                        type="number"
-                        value={additionalInfo.transportFloaters}
+                        type="text"
+                        name="transportFloaters"
+                        value={transportFeesFloaters.toLocaleString()}
                         className="rounded-lg w-80"
-                        onChange={handleAdditionalInfoChange}
-                        name="transportFloaters" />
+                        // onChange={handleAdditionalInfoChange}
+                         />
 
                     </td>
 
-                  </tr><tr className="border-b hover:bg-gray-100">
+                  </tr>
+
+                </>
+              
+
+                  <tr className="border-b hover:bg-gray-100">
                     <th
                       scope="col"
                       className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
@@ -913,11 +956,13 @@ const TransactionDetailsTable = () => {
                     </th>
                     <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
                       <input
-                        type="number"
-                        value={total}
-                        className="rounded-lg  w-80"
+                        type="text"
                         name="commissionCertified"
-                        onChange={handleAdditionalInfoChange} />
+
+                        value={totals.toLocaleString()}
+                        className="rounded-lg  w-80"
+                        // onChange={handleAdditionalInfoChange}
+                        />
 
                     </td>
 
@@ -926,7 +971,7 @@ const TransactionDetailsTable = () => {
                       className="bg-green-500 text-white p-2 m-2"
                       onClick={handleAdditionalInfoSubmit}
                     >Save Data</button>
-                  </div></> 
+                  </div></>
 
                 )}
              

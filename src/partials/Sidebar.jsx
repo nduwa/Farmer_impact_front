@@ -380,7 +380,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               <SidebarLinkGroup
                 activecondition={
                   pathname.includes("user_transactions") ||
-                  pathname.includes("user-transactions/cws-daily-journals")
+                  pathname.includes("user-transactions/cws-daily-journals")||
+                  pathname.includes("user-transactions/add_untraceable_coffee")
                 }
               >
                 {(handleClick, open) => {
@@ -388,6 +389,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                     pathname.includes("user_transactions");
                   const isCwsDailyJournalsActive = pathname.includes(
                     "user-transactions/cws-daily-journals"
+                  );
+                  const isAddUntraceableCoffeeActive = pathname.includes(
+                    "user-transactions/add_untraceable_coffee"
                   );
                   return (
                     <React.Fragment>
@@ -425,17 +429,34 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       </a>
                       <div className="lg:hidden lg:sidebar-expanded:block 2xl:block ">
                         <ul className={`pl-9 mt-2 ${!open && "hidden"}`}>
-                          <li className="mb-3 last:mb-0">
+                        <li className="mb-3 last:mb-0">
                             <NavLink
                               end
-                              to="/signin"
+                              style={
+                                isAddUntraceableCoffeeActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
+                              to="user-transactions/add_untraceable_coffee"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Add untraceable coffee
+                                Add Untraceable coffee
                               </span>
                             </NavLink>
                           </li>
+                          <li className="mb-3 last:mb-0">
+                            <NavLink
+                              end
+                              to="/reset-password"
+                              className="block text-black hover:text-slate-400 transition duration-150 truncate"
+                            >
+                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                General Harvest
+                              </span>
+                            </NavLink>
+                          </li>
+
                           <li className="mb-3 last:mb-0">
                             <NavLink
                               end
