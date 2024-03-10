@@ -8,6 +8,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchAllTransactions } from "../../redux/actions/transactions/allTransactions.action";
 import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
+import { approveFail } from "../../redux/slices/transactions/approveJournalSlice";
+import { approveJoulnal } from "../../redux/actions/transactions/approveJournal.action";
 
 const UserTransactionsTable = () => {
   const navigate = useNavigate();
@@ -17,7 +19,9 @@ const UserTransactionsTable = () => {
   const [allStaff, setAllStaff] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState();
+  const {approveData} = useSelector((state) => state.approveJournal);
   const { staffs } = useSelector((state) => state.fetchAllStaff);
+  const [selectedJournal, setSelectedJournal] = useState(null)
   const token = localStorage.getItem("token");
   const itemsPerPage = 20;
 
@@ -209,6 +213,26 @@ if(loading)
 
     return occurrences === 1;
   };
+
+  const handleApprove = (journalId) => {
+    dispatch(approveJoulnal(token, journalId))
+      .then(() => {
+        dispatch(fetchAllTransactions(token));
+        // Additional logic after approval if needed
+      })
+      .catch((error) => {
+        console.error('Error approving journal:', error);
+      });
+      
+    
+    
+    
+    
+  };
+
+
+
+  
 
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
@@ -409,13 +433,16 @@ if(loading)
                         ].toLocaleString()}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.approved === 1 ? (
-                          <button className="bg-green-500 text-white w-24 h-8 rounded-md">Approved</button>
-
-                          // <p className="bg-green-500 text-white">Approved</p>
-                        ) : (
-                          <button className="bg-orange-300 text-white w-24 h-8 rounded-md">Pending...</button>
-                        )}
+                      {transaction.approved === 1 ? (
+  <button className="bg-green-500 text-white w-24 h-8 rounded-md">Approved</button>
+) : (
+  <button
+    className="bg-orange-300 text-white w-24 h-8 rounded-md"
+    onClick={() => handleApprove(transaction.site_day_lot)}
+  >
+    Pending...
+  </button>
+)}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {transaction.parchment_lot_id}

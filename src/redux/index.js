@@ -15,6 +15,7 @@ import updateTransactionSlice from "./slices/transactions/updateTransaction";
 import commissionPriceSlice from './slices/transactions/addCommisionPrice'
 import commissionFeesSlice from './slices/transactions/addCommissionFees'
 import commissionSlice from './slices/transactions/addCommisionPrice'
+import approveJournalSlice from "./slices/transactions/approveJournalSlice";
 const store = configureStore({
   reducer: {
     // user: UserSlice.reducer,
@@ -32,7 +33,9 @@ const store = configureStore({
     updateTransaction:updateTransactionSlice,
     commission:commissionSlice,
     addCommissionPrice:commissionPriceSlice,
-    commissionFees:commissionFeesSlice
+    commissionFees:commissionFeesSlice,
+    approveJournal:approveJournalSlice
+
     
 
 

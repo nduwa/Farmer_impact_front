@@ -11,12 +11,10 @@ import { removeTransaction } from "../../redux/actions/transactions/removeTransa
 import { MdModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { fetchAllTransactions } from "../../redux/actions/transactions/allTransactions.action";
-// import { CommisionPrice } from "../../redux/actions/transactions/addCommissionPrice.action";
 import { CommisionFees } from "../../redux/actions/transactions/addCommissinFees";
 import { addCommission } from "../../redux/actions/transactions/commission.action";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { approveJoulnal } from "../../redux/actions/transactions/approveJournal.action";
 
 const TransactionDetailsTable = () => {
   const navigate = useNavigate();
@@ -30,8 +28,6 @@ const TransactionDetailsTable = () => {
   const [journals, setJournals] = useState([]);
 
   const { journal } = useSelector((state) => state.fetchAllTransactionsByJournal);
-  const { price } = useSelector((state) => state.addCommissionPrice);
-  const { commission,success } = useSelector((state) => state.commissionFees);
   const { removeTransactionData } = useSelector((state) => state.fetchAllStaff);
   const [isCommissionFeesAdded, setIsCommissionFeesAdded] = useState(false)
   const [isCommissionPriceAdded, setIsCommissionPriceAdded] = useState(false)
@@ -44,7 +40,7 @@ const TransactionDetailsTable = () => {
   const [allTransactions, setAllTransactions] = useState([]);
   const { transactions,loading } = useSelector((state) => state.fetchAllTransactions);
   const { decodedToken } = useSelector((state) => state.fetchToken);
-
+  const {success} = useSelector((state) => state.approveJournal);
   const [additionalInfo, setAdditionalInfo] = useState({
     commissionFee:10,
     transportFee:10,
@@ -55,7 +51,7 @@ const TransactionDetailsTable = () => {
   })
 
 
-
+//all transactions
   useEffect(() => {
     dispatch(fetchAllTransactions(token));
   }, [dispatch]);
@@ -65,7 +61,7 @@ const TransactionDetailsTable = () => {
       setAllTransactions(transactions.data);
     }
   }, [transactions]);
-  console.log("transactions", allTransactions);
+ 
 
 
     // Function to get unique values from an array
@@ -85,21 +81,19 @@ const TransactionDetailsTable = () => {
       return uniqueValues;
     };
   
-  
+//single journal
     const filteredJournal = 
       getUniqueValues(allTransactions,journalId.journalId);
-      console.log("transactionsdfdfdfxf",filteredJournal)
+     
   
   const formatter = new Intl.NumberFormat('en-US');
 
-     console.log("comission",commission)
-// console.log("adddd", commission.commissionCertified)
+//removing transaction
   const openModal = (transactionId) => {
     setTransactionIdToDelete(transactionId)
    
     setModalOpen(true);
   };
-
   const closeModal = () => {
     setTransactionIdToDelete(null)
     setModalOpen(false);
@@ -116,7 +110,7 @@ const TransactionDetailsTable = () => {
     }
   
     console.log(`Deleting transaction with ID: ${transactionId}`);
-    closeModal(); // Close the modal after deletion
+    closeModal(); etion
   };
   useEffect(() => {
     
@@ -127,15 +121,12 @@ const TransactionDetailsTable = () => {
     }
   }, [removeTransactionData,dispatch]); 
 
- 
-
-  
-
+ //
   useEffect(() => {
     dispatch(
       fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", ""))
     );
-  }, [dispatch]);
+  }, [dispatch,token,journalId]);
 
   useEffect(() => {
     if (journal) {
@@ -286,28 +277,20 @@ const TransactionDetailsTable = () => {
 
     return totalValues;
   };
-
+//calculating totals
   const totalValues = calculateTotalValues();
   const totalCommission = additionalInfo.commissionFee * totalValues.totalKgs
   const transportFeesCherry = additionalInfo.transportFee * totalValues.totalCertified 
   const transportFeesFloaters  = additionalInfo.transportFee* totalValues.totalFloaters
   const totals = totalCommission + transportFeesCherry + transportFeesFloaters
   
- 
-  
- 
-
-
 
 const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
-
 const formattedTransportFeesCherry= formatNumberWithCommas(transportFeesCherry)
 console.log("formaaa",formattedTransportFeesCherry)
-
-
 
   const formatDate = (dateString) => {
     const options = {
@@ -326,13 +309,11 @@ console.log("formaaa",formattedTransportFeesCherry)
     setShowTransactionModel(true);
   };
  
-
   const handleTransactionUpdate = (userId, newPassword) => {
    
     setSelectedUser(null);
     setShowTransactionModel(true);
   };
-
 
   const handleAdditionalInfoChange = (e) => {
     const { name, value } = e.target;
@@ -342,29 +323,24 @@ console.log("formaaa",formattedTransportFeesCherry)
     }));
   };
 
-  
   const handleAdditionalInfoSubmit = async (e) => {
     e.preventDefault();
     try {
        dispatch(addCommission(  additionalInfo));
-      // toast.success("commission");
+      
       console.log("fjvhdfv",additionalInfo)
       setIsCommissionPriceAdded(true)
-    
-  
     } catch (error) {
       console.error("Update failed:", error);
-      // toast.error("Failed to update transaction");
     }
   };
 
-
+//adding commission fees
   const handleCommissionFeesSubmit = async (e) => {
     e.preventDefault();
     try {
        dispatch(CommisionFees(token,{
         commission_fees: totalCommission,
-        // transportCherry: transportFeesCherry,
         floater_transport_fee: transportFeesFloaters,
         created_at: Date.now(),
         created_by: decodedToken.user.id,
@@ -382,15 +358,26 @@ console.log("formaaa",formattedTransportFeesCherry)
         status:0
       
       }));
-    
-    
       setIsCommissionFeesAdded(true)
       setIsApproveButton(true)
   
     } catch (error) {
       console.error("Update failed:", error);
-   
     }
+  };
+
+//approving transaction
+  const handleApprove = () => {
+    dispatch(approveJoulnal(token, journalId.journalId))
+      .then(() => {
+      if(success){
+        navigate('/user-transaction');
+      }
+      })
+      .catch((error) => {
+        console.error('Error approving journal:', error);
+      });
+      
   };
 
   return (
@@ -848,12 +835,12 @@ console.log("formaaa",formattedTransportFeesCherry)
             </span>
           </span>
         </div>
-      </div>
-      {isCommissionFeesAdded &&(
+      </div>      {isCommissionFeesAdded &&(
+
                   <div className="flex justify-center items-center">
                   <button
                     className="bg-green-500 text-white p-2 m-2"
-                    onClick={handleCommissionFeesSubmit}
+                    onClick={handleApprove}
                   >Approve Transaction</button>
                 </div>
                 )}
@@ -892,7 +879,7 @@ console.log("formaaa",formattedTransportFeesCherry)
                       Transport Fees
                     </th>
                     <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input type="number"
+                      <input type="text"
                         value={additionalInfo.transportFee}
                         className="rounded-lg w-80"
                         name="transportFee"
@@ -901,72 +888,7 @@ console.log("formaaa",formattedTransportFeesCherry)
                     </td>
 
                   </tr></>
-                  {/* <tr className="border-b hover:bg-gray-100">
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                    >
-                      Commission for untraceable coffee
-                    </th>
-                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input type="number"
-                        value={additionalInfo.commissionUntraced}
-                        className="rounded-lg w-80"
-                        name="commissionUntraced"
-                        onChange={handleAdditionalInfoChange} />
-                    </td>
-
-                  </tr><tr className="border-b hover:bg-gray-100">
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                    >
-                      Transport Fee (Cherries)
-                    </th>
-                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input type="number"
-                        value={additionalInfo.transportCherry}
-                        className="rounded-lg w-80"
-                        name="transportCherry"
-                        onChange={handleAdditionalInfoChange} />
-
-                    </td>
-
-                  </tr><tr className="border-b">
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                    >
-                      Transport Fee (Floaters)
-                    </th>
-                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input
-                        type="number"
-                        value={additionalInfo.transportFloaters}
-                        className="rounded-lg w-80"
-                        onChange={handleAdditionalInfoChange}
-                        name="transportFloaters" />
-
-                    </td>
-
-                  </tr><tr className="border-b hover:bg-gray-100">
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                    >
-                      Total site collector payment
-                    </th>
-                    <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                      <input
-                        type="number"
-                        value={total}
-                        className="rounded-lg  w-80"
-                        name="commissionCertified"
-                        onChange={handleAdditionalInfoChange} />
-
-                    </td>
-
-                  </tr> */}
+                
                   <div className="flex justify-center items-center">
                     <button
                       className="bg-green-500 text-white p-2 m-2"

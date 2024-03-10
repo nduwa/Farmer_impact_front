@@ -92,6 +92,23 @@ export const allStaff = async () => {
     });
   };
 
+  export const approveJournal = (token, id) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put(`${url}/coffeePurchase/dailyJournal/journal/approve/${id}`, null, {
+          headers: {
+            auth_token: ` ${token}`,
+          },
+        })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          if (error.response.data !== undefined) {
+            reject(error.response.data);
+          }
+          reject(error);
+        });
+    });
+  };
 
   export const addCommissionPrice = (token,data) => {
     return new Promise((resolve, reject) => {
