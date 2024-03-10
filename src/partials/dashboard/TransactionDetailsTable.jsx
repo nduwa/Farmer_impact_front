@@ -10,6 +10,9 @@ import { fetchAllTransactionsByJournal } from "../../redux/actions/transactions/
 import { removeTransaction } from "../../redux/actions/transactions/removeTransaction.action";
 import { MdModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { fetchAllTransactions } from "../../redux/actions/transactions/allTransactions.action";
+// import { CommisionPrice } from "../../redux/actions/transactions/addCommissionPrice.action";
+import { CommisionFees } from "../../redux/actions/transactions/addCommissinFees";
 import { addCommission } from "../../redux/actions/transactions/commission.action";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
@@ -27,14 +30,21 @@ const TransactionDetailsTable = () => {
   const [journals, setJournals] = useState([]);
 
   const { journal } = useSelector((state) => state.fetchAllTransactionsByJournal);
-  const { commission } = useSelector((state) => state.commission);
+  const { price } = useSelector((state) => state.addCommissionPrice);
+  const { commission,success } = useSelector((state) => state.commissionFees);
   const { removeTransactionData } = useSelector((state) => state.fetchAllStaff);
-
+  const [isCommissionFeesAdded, setIsCommissionFeesAdded] = useState(false)
+  const [isCommissionPriceAdded, setIsCommissionPriceAdded] = useState(false)
+  const [isApproveButton, setIsApproveButton] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [transactionIdToDelete, setTransactionIdToDelete] = useState(null);
   const [showTransactionModel, setShowTransactionModel] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [allTransactions, setAllTransactions] = useState([]);
+  const { transactions,loading } = useSelector((state) => state.fetchAllTransactions);
+  const { decodedToken } = useSelector((state) => state.fetchToken);
+
   const [additionalInfo, setAdditionalInfo] = useState({
     commissionFee:10,
     transportFee:10,
@@ -43,8 +53,46 @@ const TransactionDetailsTable = () => {
     transportFloaters:10,
 
   })
+
+
+
+  useEffect(() => {
+    dispatch(fetchAllTransactions(token));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (transactions) {
+      setAllTransactions(transactions.data);
+    }
+  }, [transactions]);
+  console.log("transactions", allTransactions);
+
+
+    // Function to get unique values from an array
+    const getUniqueValues = (arr, key) => {
+      const uniqueValues = [];
+      const uniqueKeys = new Set();
+  
+      arr.forEach((item) => {
+        const value = item[key];
+  
+        if (!uniqueKeys.has(value)) {
+          uniqueKeys.add(value);
+          uniqueValues.push(item);
+        }
+      });
+  
+      return uniqueValues;
+    };
+  
+  
+    const filteredJournal = 
+      getUniqueValues(allTransactions,journalId.journalId);
+      console.log("transactionsdfdfdfxf",filteredJournal)
+  
   const formatter = new Intl.NumberFormat('en-US');
-     
+
+     console.log("comission",commission)
 // console.log("adddd", commission.commissionCertified)
   const openModal = (transactionId) => {
     setTransactionIdToDelete(transactionId)
@@ -94,6 +142,7 @@ const TransactionDetailsTable = () => {
       setJournals(journal.data);
     }
   }, [journal]);
+  console.log("journalllleeeee",journals)
  
 
   const calculateTotalKilogramsByJournal = () => {
@@ -239,10 +288,14 @@ const TransactionDetailsTable = () => {
   };
 
   const totalValues = calculateTotalValues();
-  const totalCommission = commission?.commissionFee * totalValues.totalKgs
-  const transportFeesCherry = commission?.transportFee * totalValues.totalCertified 
-  const transportFeesFloaters  = commission?.transportFee * totalValues.totalFloaters
+  const totalCommission = additionalInfo.commissionFee * totalValues.totalKgs
+  const transportFeesCherry = additionalInfo.transportFee * totalValues.totalCertified 
+  const transportFeesFloaters  = additionalInfo.transportFee* totalValues.totalFloaters
   const totals = totalCommission + transportFeesCherry + transportFeesFloaters
+  
+ 
+  
+ 
 
 
 
@@ -289,21 +342,54 @@ console.log("formaaa",formattedTransportFeesCherry)
     }));
   };
 
+  
   const handleAdditionalInfoSubmit = async (e) => {
     e.preventDefault();
     try {
        dispatch(addCommission(  additionalInfo));
       // toast.success("commission");
       console.log("fjvhdfv",additionalInfo)
-      // onClose();
-      // onSubmit(additionalInfo);
-  
-      // Fetch transactions after successful update
-      // dispatch(fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", "")));
+      setIsCommissionPriceAdded(true)
+    
   
     } catch (error) {
       console.error("Update failed:", error);
       // toast.error("Failed to update transaction");
+    }
+  };
+
+
+  const handleCommissionFeesSubmit = async (e) => {
+    e.preventDefault();
+    try {
+       dispatch(CommisionFees(token,{
+        commission_fees: totalCommission,
+        // transportCherry: transportFeesCherry,
+        floater_transport_fee: transportFeesFloaters,
+        created_at: Date.now(),
+        created_by: decodedToken.user.id,
+        _kf_Supplier: filteredJournal[0]._kf_Supplier,
+        _kf_Station: filteredJournal[0]._kf_Station,
+        day_lot_number: filteredJournal[0].DayLotNumber,
+        UserID: decodedToken.staff.userID,
+        site_cherry_price: filteredJournal[0].unitprice,
+        site_cherry_kgs: totalValues.totalCertified + totalValues.totalUncertified,
+        site_Floater_kgs: totalValues.totalFloaters,
+        site_Floater_price: filteredJournal[0].bad_unit_price,
+        transport_fees: additionalInfo.transportFee,
+        site_total_payment: totals,
+        site_day_lot:filteredJournal[0].site_day_lot,
+        status:0
+      
+      }));
+    
+    
+      setIsCommissionFeesAdded(true)
+      setIsApproveButton(true)
+  
+    } catch (error) {
+      console.error("Update failed:", error);
+   
     }
   };
 
@@ -763,12 +849,20 @@ console.log("formaaa",formattedTransportFeesCherry)
           </span>
         </div>
       </div>
+      {isCommissionFeesAdded &&(
+                  <div className="flex justify-center items-center">
+                  <button
+                    className="bg-green-500 text-white p-2 m-2"
+                    onClick={handleCommissionFeesSubmit}
+                  >Approve Transaction</button>
+                </div>
+                )}
       <p className="mt-3 font-bold">Additional Info</p>
       <div className="items-center  bg-white justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex w-full gap-5 mb-4  sm:mb-0 ">
           <table className="min-w-[70%] divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
               <thead className=" dark:bg-gray-700">
-                {!commission &&(
+                {!isCommissionPriceAdded &&(
                     <><><tr className="border-b hover:bg-gray-100">
                   <th
                     scope="col"
@@ -882,7 +976,7 @@ console.log("formaaa",formattedTransportFeesCherry)
 
                 )}
 
-{commission &&(
+{isCommissionPriceAdded  && !isApproveButton &&(
                     <><><tr className="border-b hover:bg-gray-100">
                   <th
                     scope="col"
@@ -969,11 +1063,14 @@ console.log("formaaa",formattedTransportFeesCherry)
                   </tr><div className="flex justify-center items-center">
                     <button
                       className="bg-green-500 text-white p-2 m-2"
-                      onClick={handleAdditionalInfoSubmit}
+                      onClick={handleCommissionFeesSubmit}
                     >Save Data</button>
-                  </div></>
+                  </div>
+                  </>
 
                 )}
+               
+               
              
              
               </thead>

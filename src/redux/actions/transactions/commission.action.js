@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { commissionPending, commissionSuccess, commissionFail } from '../../slices/transactions/commission';
+import { commissionPending, commissionSuccess, commissionFail } from '../../slices/transactions/addCommissionFees';
 
 export const addCommission= (data) => async (dispatch) => {
     try {

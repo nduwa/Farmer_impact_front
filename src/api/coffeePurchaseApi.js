@@ -91,3 +91,37 @@ export const allStaff = async () => {
         });
     });
   };
+
+
+  export const addCommissionPrice = (token,data) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${url}/coffeePurchase/dailyJournal/fees/`,data,{
+          headers: { auth_token: ` ${token}` },
+        })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          if (error.response?.data !== undefined) {
+            reject(error.response.data);
+          }
+          reject(error);
+        });
+    });
+  };
+
+
+  export const addCommissionFees = (token,data) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${url}/coffeePurchase/dailyJournal/commissions/`,data,{
+          headers: { auth_token: ` ${token}` },
+        })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          if (error.response?.data !== undefined) {
+            reject(error.response.data);
+          }
+          reject(error);
+        });
+    });
+  };

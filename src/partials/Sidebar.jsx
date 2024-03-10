@@ -381,7 +381,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 activecondition={
                   pathname.includes("user_transactions") ||
                   pathname.includes("user-transactions/cws-daily-journals")||
-                  pathname.includes("user-transactions/add_untraceable_coffee")
+                  pathname.includes("user_transaction/add_untraceable_coffee")
                 }
               >
                 {(handleClick, open) => {
@@ -391,7 +391,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                     "user-transactions/cws-daily-journals"
                   );
                   const isAddUntraceableCoffeeActive = pathname.includes(
-                    "user-transactions/add_untraceable_coffee"
+                    "user_transaction/add_untraceable_coffee"
                   );
                   return (
                     <React.Fragment>
@@ -437,7 +437,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                   ? { color: "#4F46E5" }
                                   : {}
                               }
-                              to="user-transactions/add_untraceable_coffee"
+                              to="/user_transaction/add_untraceable_coffee"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -445,17 +445,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               </span>
                             </NavLink>
                           </li>
-                          <li className="mb-3 last:mb-0">
-                            <NavLink
-                              end
-                              to="/reset-password"
-                              className="block text-black hover:text-slate-400 transition duration-150 truncate"
-                            >
-                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                General Harvest
-                              </span>
-                            </NavLink>
-                          </li>
+                         
 
                           <li className="mb-3 last:mb-0">
                             <NavLink

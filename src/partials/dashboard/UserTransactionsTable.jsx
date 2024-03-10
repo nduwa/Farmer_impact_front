@@ -41,7 +41,7 @@ const UserTransactionsTable = () => {
       setAllStaff(staffs.data);
     }
   }, [staffs]);
-  console.log("transactionWEFSERFERs", allStaff);
+  
 if(loading)
 {
   return <p className=" text-center">..Loading..</p>
@@ -198,13 +198,13 @@ if(loading)
   const allPaperReceipts = allTransactions.map(
     (transaction) => transaction.paper_receipt
   );
-console.log("alllll",allPaperReceipts)
+
 
   const isUniquePaperSlip = (paperReceipt) => {
     const occurrences = allPaperReceipts.filter(
       (value) => value === paperReceipt
     ).length;
-    console.log("occurences",occurrences)
+
    
 
     return occurrences === 1;

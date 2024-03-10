@@ -43,7 +43,7 @@ const journalId = useParams()
         <Route exact path="/user-administaration/access-controll/module-access/:userId" element={<AccessControl />} />
         <Route exact path="/user-administaration/access-controll/mobile-access/:userId" element={<AccessControlMobile />} />
         <Route exact path="/user_transactions/staff_lot_details/:journalId" element={<TransactionDetails />} />
-        <Route exact path="/user_transactions/add_untraceable_coffee" element={<AddUntraceableCoffee />} />
+        <Route exact path="/user_transaction/add_untraceable_coffee" element={<AddUntraceableCoffee />} />
 
       </Routes>
     </>

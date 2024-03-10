@@ -15,13 +15,14 @@ function DropdownProfile({
   const dropdown = useRef(null);
   const navigate = useNavigate();
   const { token, decodedToken } = useSelector((state) => state.fetchToken);
-console.log("decodeddd",decodedToken)
+
 const dispatch = useDispatch()
 useEffect(() => {
   dispatch(handleToken());
 }, [dispatch]);
 const user = decodedToken?.staff.Name
 const Role = decodedToken?.staff.Role
+
 
 
   // close on click outside

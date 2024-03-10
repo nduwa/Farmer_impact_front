@@ -12,7 +12,9 @@ import allTransactionsSlice from "./slices/transactions/allTransactionsSlice";
 import removeTransactionSlice from "./slices/transactions/removeTransactionSlice";
 import transactionByJournalSlice from "./slices/transactions/transactionByJournalSlice";
 import updateTransactionSlice from "./slices/transactions/updateTransaction";
-import commisionSlice from './slices/transactions/commission'
+import commissionPriceSlice from './slices/transactions/addCommisionPrice'
+import commissionFeesSlice from './slices/transactions/addCommissionFees'
+import commissionSlice from './slices/transactions/addCommisionPrice'
 const store = configureStore({
   reducer: {
     // user: UserSlice.reducer,
@@ -28,7 +30,9 @@ const store = configureStore({
     removeTransaction:removeTransactionSlice,
     fetchAllTransactionsByJournal:transactionByJournalSlice,
     updateTransaction:updateTransactionSlice,
-    commission:commisionSlice
+    commission:commissionSlice,
+    addCommissionPrice:commissionPriceSlice,
+    commissionFees:commissionFeesSlice
     
 
 
