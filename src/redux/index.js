@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore  } from "@reduxjs/toolkit";
 // import UserSlice from "./slices/userSlice";
 import login from '../redux/slices/auth/loginSlice'
 import users from '../redux/slices/user/allUsersSlice'
@@ -16,7 +16,10 @@ import commissionPriceSlice from './slices/transactions/addCommisionPrice'
 import commissionFeesSlice from './slices/transactions/addCommissionFees'
 import commissionSlice from './slices/transactions/addCommisionPrice'
 import approveJournalSlice from "./slices/transactions/approveJournalSlice";
+import allStationSlice from './slices/station/allStationsSlice'
+
 const store = configureStore({
+  
   reducer: {
     // user: UserSlice.reducer,
     login,
@@ -34,12 +37,12 @@ const store = configureStore({
     commission:commissionSlice,
     addCommissionPrice:commissionPriceSlice,
     commissionFees:commissionFeesSlice,
-    approveJournal:approveJournalSlice
-
-    
-
-
- 
+    approveJournal:approveJournalSlice,
+    fetchAllStations:allStationSlice,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false,
+    serializableCheck: false,
+  })
 });
 export default store;

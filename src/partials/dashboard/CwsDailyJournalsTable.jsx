@@ -1,111 +1,407 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import UpdateItemDrawer from "./UpdateItemDrawer";
 import DeleteItemDrawer from "./DeleteItemDrawer";
 import AddItemDrawer from "./AddItemDrawer";
+import DashboardCard02 from "./DashboardCard02";
+import DashboardCard03 from "./DashboardCard03";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { fetchAllTransactions } from "../../redux/actions/transactions/allTransactions.action";
+import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
+import { approveFail } from "../../redux/slices/transactions/approveJournalSlice";
+import { approveJoulnal } from "../../redux/actions/transactions/approveJournal.action";
+import { MdAdd } from "react-icons/md";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { IoAddCircleOutline } from "react-icons/io5";  
+import { fetchAllStation } from "../../redux/actions/station/allStations.action";
 
 const CwsDailyJournalsTable = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [allTransactions, setAllTransactions] = useState([]);
+  const { transactions,loading } = useSelector((state) => state.fetchAllTransactions);
+  const [allStation, setAllStation] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState();
+  const {approveData} = useSelector((state) => state.approveJournal);
+  const { stations } = useSelector((state) => state.fetchAllStations);
+  const [selectedJournal, setSelectedJournal] = useState(null)
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const token = localStorage.getItem("token");
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+ 
+
+  useEffect(() => {
+    dispatch(fetchAllTransactions(token));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (transactions) {
+      setAllTransactions(transactions.data);
+    }
+  }, [transactions]);
+  console.log("transactions", allTransactions);
+
+  useEffect(() => {
+    dispatch(fetchAllStation());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (stations) {
+      setAllStation(stations.data);
+    }
+  }, [stations]);
+  
+if(loading)
+{
+  return <p className=" text-center">..Loading..</p>
+}
+
+  const handleSearch = (e) => {
+    const searchItem = e.target.value;
+    setSearchQuery(searchItem);
+  };
+
+  // Function to get unique values from an array
+  const getUniqueValues = (arr, key) => {
+    const uniqueValues = [];
+    const uniqueKeys = new Set();
+
+    arr.forEach((item) => {
+      const value = item[key];
+
+      if (!uniqueKeys.has(value)) {
+        uniqueKeys.add(value);
+        uniqueValues.push(item);
+      }
+    });
+
+    return uniqueValues;
+  };
+
+
+  const filteredTransaction = searchQuery
+    ? getUniqueValues(
+        allTransactions?.filter((transaction) =>
+          Object.values(transaction).some(
+            (value) =>
+              typeof value === "string" &&
+              value.toLowerCase().includes(searchQuery?.toLowerCase())
+          )
+        ),
+        "transaction_date"
+      )
+    : getUniqueValues(allTransactions, "transaction_date").filter(
+      (transaction) =>
+        selectedStatus === "all" ||
+        (selectedStatus === "open" && transaction.approved !== 1) ||
+        (selectedStatus === "closed" && transaction.approved === 1)
+    );
+    console.log("filtered",filteredTransaction)
+
+  const getUserScIdById = (_kf_Staff) => {
+    const staff = allStaff?.find((staff) => staff.__kp_Staff === _kf_Staff);
+    return staff ? staff.userID : null;
+  };
+
+  const getStationName = (_kf_Station) => {
+    const station = allStation?.find((station) => station.__kp_Station === _kf_Station);
+    return station ? station.Name : null;
+  };
+
+  const calculateTotalKilogramsByJournal = () => {
+    const sumByJournal = {};
+
+    // Iterate through transactions
+    allTransactions.forEach((transaction) => {
+      const journal = transaction.transaction_date;
+      const kilograms = transaction.kilograms || 0;
+
+      // Check if the JOURNAL# exists in the sumMap
+      if (!sumByJournal[journal]) {
+        sumByJournal[journal] = 0;
+      }
+
+      // Add kilograms to the sumMap
+      sumByJournal[journal] += kilograms;
+    });
+
+    return sumByJournal;
+  };
+
+  // Call the calculateTotalKilogramsByJournal function to get the sum
+  const sumByJournal = calculateTotalKilogramsByJournal();
+
+
+
+  const calculateTotalPrice = () => {
+    const totalPriceByJournal = {};
+
+   
+    allTransactions.forEach((transaction) => {
+      const journal = transaction.site_day_lot;
+      const cash = transaction.cash_paid || 0;
+
+     
+      if (!totalPriceByJournal[journal]) {
+        totalPriceByJournal[journal] = 0;
+      }
+
+    
+      totalPriceByJournal[journal] += cash;
+    });
+
+    return totalPriceByJournal;
+  };
+
+  
+  const totalPriceByJournal = calculateTotalPrice();
+
+
+
+  const sumFloatersKG = () => {
+    const sum = {};
+
+    
+    allTransactions.forEach((transaction) => {
+      const journal = transaction.site_day_lot;
+      const kilograms = transaction.bad_kilograms;
+
+      
+      if (!sum[journal]) {
+        sum[journal] = 0;
+      }
+
+      
+      sum[journal] += kilograms;
+    });
+
+    return sum;
+  };
+  const floatersSum = sumFloatersKG();
+
+  const calculateTotalKilogramsPurchased = (transaction) => {
+    const certifiedKG =
+      transaction.certified === 1
+        ? sumByJournal[transaction.site_day_lot] || 0
+        : 0;
+    const uncertifiedKG =
+      transaction.certified === 1
+        ? 0
+        : sumByJournal[transaction.site_day_lot] || 0;
+    const floatersKG = floatersSum[transaction.site_day_lot] || 0;
+
+    return certifiedKG + uncertifiedKG + floatersKG;
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(parseInt(e.target.value, 10));
+  };
+  const totalPages = Math.ceil(filteredTransaction?.length / itemsPerPage);
+  console.log("pages", totalPages);
+  // Paginate the user data
+  const paginatedTransactions = filteredTransaction?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const allPaperReceipts = allTransactions.map(
+    (transaction) => transaction.paper_receipt
+  );
+  const handleStatusChange = (e) => {
+    setSelectedStatus(e.target.value);
+  };
+
+  const isUniquePaperSlip = (paperReceipt) => {
+    const occurrences = allPaperReceipts.filter(
+      (value) => value === paperReceipt
+    ).length;
+
+   
+
+    return occurrences === 1;
+  };
+
+  
+  const calculateTotalValues = () => {
+    const totalValues = {
+      uploadedTime: 0,
+      transactionDate: "",
+      totalFloaters: 0,
+      averagePrice: 0,
+      totalCertified: 0,
+      totalUncertified: 0,
+      totalCoffeeValue: 0,
+      totalUnTraceableKg: 0,
+      totalKgs: 0,
+      siteCollector: "",
+    };
+
+   
+    allTransactions.forEach((transaction) => {
+      totalValues.transactionDate = transaction.transaction_date;
+
+      totalValues.uploadedTime = transaction.uploaded_at;
+
+      if (transaction.certified === 1) {
+        totalValues.totalCertified += transaction.kilograms;
+        totalValues.totalUncertified = 0;
+      } else {
+        totalValues.totalUncertified += transaction.kilograms;
+        totalValues.totalCertified = 0;
+      }
+      totalValues.totalFloaters += transaction.bad_kilograms;
+      totalValues.averagePrice = transaction.unitprice;
+      totalValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price;
+      totalValues.totalKgs =
+      totalValues.totalCertified +
+        totalValues.totalUncertified +
+        totalValues.totalFloaters;
+    });
+
+    return totalValues;
+  };
+  const totalValues = calculateTotalValues();
+
+
+
+
+
+
+
+
+
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
-      <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
-        <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
+      <div className="py-4 ml-0 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
+        <div className="items-center  justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center mb-4 sm:mb-0">
+            
+            <div className="flex items-center sm:justify-end">
+              <div className="flex pl-2 space-x-1 mt-1">
+              {/* <p>Records</p> */}
+              <div>
+                <span>Record</span>
+               <select
+                  name=""
+                  value={itemsPerPage}
+                  onChange={handleItemsPerPageChange}
+                  className="rounded-lg w-40"
+                >
+                  <option value="20">20</option>
+                  <option value="40">40</option>
+                  <option value="60">60</option>
+                </select>
+              </div>
+          
+          {/* <p>Status</p> */}
+          <div>
+            <span>Status</span>
+            <select
+        name=""
+        value={selectedStatus}
+        onChange={handleStatusChange}
+        className="rounded-lg w-40"
+      >
+        <option value="all">All</option>
+        <option value="open">Open</option>
+        <option value="closed">Closed</option>
+      </select>
+         
+          </div>
+         
+              </div>
+            </div>
             <form className="sm:pr-3" action="#" method="GET">
               <label htmlFor="products-search" className="sr-only">
                 Search
               </label>
-              <div className="relative w-48 mt-1 sm:w-64 xl:w-96">
+              <div className="relative w-48 ml-3 mt-1 sm:w-64 mr-1 xl:w-96">
+               <span>Search by CWS Name, Cherry Lot ID ...
+                </span>
                 <input
                   type="text"
                   name="email"
+                  onChange={handleSearch}
                   id="products-search"
                   class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Search for products"
                 />
               </div>
+             
             </form>
-            <div className="flex items-center sm:justify-end">
-              <div className="flex pl-2 space-x-1">
-                <a
-                  href="#"
-                  className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </a>
+            <div className="flex pl-2 space-x-1 -ml-3">
+              <div>
+                <span>From</span>
+                <input type="date"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 
-                <a
-                  href="#"
-                  className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                  </svg>
-                </a>
+           />
               </div>
+              <div>
+                <span>To</span>
+                <input type="date"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-30  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+
+           />
+              </div>
+           
+           
             </div>
           </div>
-          <button
-            id="createProductButton"
-            className="text-white bg-blue-600 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-            type="button"
-            data-drawer-target="drawer-create-product-default"
-            data-drawer-show="drawer-create-product-default"
-            aria-controls="drawer-create-product-default"
-            data-drawer-placement="right"
-          >
-            Add new product
-          </button>
+
         </div>
       </div>
+      <div className="flex flex-row left-4 items-center justify-center py-8 gap-3">
+        <DashboardCard02
+        cardTitle="TOTAL CHERRY PURCHASES"
+        totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+        certified={totalValues.totalCertified}
+        traceableUncertified={totalValues.totalCertified}
+        uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+        floaters={totalValues.totalFloaters.toLocaleString()}
+        />
+        <DashboardCard02
+        cardTitle="PROJECTED PARCHMENT (KG)"
+         totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+         certified={totalValues.totalCertified}
+         traceableUncertified={totalValues.totalCertified}
+         uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+         floaters={totalValues.totalFloaters.toLocaleString()}
+        />
+        <DashboardCard02
+         cardTitle="PREVIOUS APPROVED PRICE"
+        totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+        certified={totalValues.totalCertified}
+        traceableUncertified={totalValues.totalCertified}
+        uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+        floaters={totalValues.totalFloaters.toLocaleString()}
+        />
+        <DashboardCard02
+        cardTitle="CURRENT PURCHASE PRICE"
+         totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+         certified={totalValues.totalCertified}
+         traceableUncertified={totalValues.totalCertified}
+         uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+         floaters={totalValues.totalFloaters.toLocaleString()}/>
+
+      </div>
+      <div className="flex flex-row left-4 items-center justify-center py-8 gap-3">
+
+      </div>
+
+
+
       <div className="flex flex-col">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
@@ -113,151 +409,242 @@ const CwsDailyJournalsTable = () => {
               <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
-                    <th scope="col" className="p-4">
-                      <div className="flex items-center">
-                        <input
-                          id="checkbox-all"
-                          aria-describedby="checkbox-1"
-                          type="checkbox"
-                          className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                        <label htmlFor="checkbox-all" className="sr-only">
-                          checkbox
-                        </label>
-                      </div>
+                    <th scope="col"
+                    colSpan={4}
+                     className="p-4">
+                     
+                    </th>
+                    <th
+                      scope="col"
+                   colSpan={2}
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      CERTIFIED
+                    </th>
+                    <th
+                      scope="col"
+                      colSpan={2}
+                    
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      UNCERTIFIED
+                    </th>
+                    <th
+                      scope="col"
+                      colSpan={3}
+
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      BUCKET COUNT
+                    </th>
+                    <th
+                      scope="col"
+                  colSpan={3}
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      Skin Drying Grade Weighing	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Product Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Technology
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Description
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      ID
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Price
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Discount
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Actions
+                
                     </th>
                   </tr>
+
+                  <tr>
+                    {/* <th scope="col"
+                   
+                     className="p-4">
+                     
+                    </th> */}
+                    <th
+                      scope="col"
+                  
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      CWS.NAME	
+                    </th>
+                    <th
+                      scope="col"
+                 
+                    
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                   STATUS	
+                    </th>
+                    <th
+                      scope="col"
+                   
+
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                  PURCHASE.DATE	
+                    </th>
+                    <th
+                      scope="col"
+                  
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                     CHERRY.LOT.ID
+                    </th>
+                    <th
+                      scope="col"
+                  
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                    KG
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                     PX	
+                    </th>
+                    <th
+                      scope="col"
+                  
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                    KG
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                     PX	
+                    </th> 
+                    <th
+                      scope="col"
+                  
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                   GRADE.A	
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+               GRADE.B	
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+               GRADE.C
+                    </th>
+                    <th
+                      scope="col"
+                  
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                   GRADE.A	
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+               GRADE.B	
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+               GRADE.C
+                    </th>
+                    <th
+                      scope="col"
+                     
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+             FARMERS
+                    </th>
+                  </tr>
+                
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                {paginatedTransactions?.map((journal, index) => 
+           
                   <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
                     <td className="w-4 p-4">
-                      <div className="flex items-center">
-                        <input
-                          id="checkbox-{{ .id }}"
-                          aria-describedby="checkbox-1"
-                          type="checkbox"
-                          className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                        <label for="checkbox-{{ .id }}" class="sr-only">
-                          checkbox
-                        </label>
-                      </div>
+                    {getStationName(journal._kf_Station)}
                     </td>
                     <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                      <div className="text-base font-semibold text-gray-900 dark:text-white">
-                        Name
-                      </div>
-                      <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                        Category
-                      </div>
+                    {journal.fm_approval === 1 ? (
+                      <button className="bg-red-500 text-white w-24 h-8 rounded-md">Open</button>
+                    ) : (
+                      <button
+                        className="bg-green-500 text-white w-24 h-8 rounded-md"
+                       
+                      >
+                        Closed
+                      </button>
+                    )}
+    
                     </td>
                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      Technology
+                    {journal.transaction_date}
                     </td>
                     <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                      Anim consectetur minim nulla adipisicing.
+                    <a
+                          href="##3"
+                          className="text-blue-500 hover:text-gray-500"
+                        >
+                          #{journal.site_day_lot}
+                        </a>
                     </td>
                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      #1234
+                    {journal.certified === 1
+                          ? sumByJournal[
+                              journal.transaction_date
+                            ]?.toLocaleString()
+                          : ""}
                     </td>
                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      $123
+                    {journal.certified === 1
+                          ? journal.unitprice
+                          : ""}
                     </td>
                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      10%
+                    {journal.certified === 1
+                          ? ""
+                          : sumByJournal[
+                              journal.transaction_date?.toLocaleString()
+                            ]}
                     </td>
                     <td className="p-4 space-x-2 whitespace-nowrap">
-                      <button
-                        type="button"
-                        id="updateProductButton"
-                        data-drawer-target="drawer-update-product-default"
-                        data-drawer-show="drawer-update-product-default"
-                        aria-controls="drawer-update-product-default"
-                        data-drawer-placement="right"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                      >
-                        <svg
-                          className="w-4 h-4 mr-2"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                          <path
-                            fillRule="evenodd"
-                            d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                        Update
-                      </button>
-                      <button
-                        type="button"
-                        id="deleteProductButton"
-                        data-drawer-target="drawer-delete-product-default"
-                        data-drawer-show="drawer-delete-product-default"
-                        aria-controls="drawer-delete-product-default"
-                        data-drawer-placement="right"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
-                      >
-                        <svg
-                          class="w-4 h-4 mr-2"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                        Delete item
-                      </button>
+                    {journal.certified === 1
+                          ?""
+                          :  journal.unitprice}
+                    </td>
+                    <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />                    </td>
+                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
+                    </td>
+                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
+                    </td>
+                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
+                    </td>
+                    <td className="p-4 space-x-2 whitespace-nowrap">
+                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
+                    </td>
+                    <td className="p-4 space-x-2 whitespace-nowrap">
+                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
+                    </td>
+                    <td className="p-4 space-x-2 whitespace-nowrap">
+                     <FaPeopleGroup className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"/>
                     </td>
                   </tr>
+               )}
                 </tbody>
               </table>
             </div>
@@ -269,6 +656,7 @@ const CwsDailyJournalsTable = () => {
         <div className="flex items-center mb-4 sm:mb-0">
           <a
             href="#"
+            onClick={handlePrevPage}
             className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <svg
@@ -286,6 +674,7 @@ const CwsDailyJournalsTable = () => {
           </a>
           <a
             href="#"
+            onClick={handleNextPage}
             className="inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <svg
@@ -304,17 +693,22 @@ const CwsDailyJournalsTable = () => {
           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
             Showing{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              1-20
+              {(currentPage - 1) * itemsPerPage + 1}
+            </span>{" "}
+            -{" "}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {Math.min(currentPage * itemsPerPage, filteredTransaction?.length)}
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              2290
+              {filteredTransaction?.length}
             </span>
           </span>
         </div>
         <div className="flex items-center space-x-3">
           <a
             href="#"
+            onClick={handlePrevPage}
             className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
           >
             <svg
@@ -332,6 +726,7 @@ const CwsDailyJournalsTable = () => {
             Previous
           </a>
           <a
+              onClick={handleNextPage}
             href="#"
             className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
           >

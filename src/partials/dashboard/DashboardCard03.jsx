@@ -7,7 +7,7 @@ import EditMenu from '../../components/DropdownEditMenu';
 // Import utilities
 import { tailwindConfig, hexToRGB } from '../../utils/Utils';
 
-function DashboardCard03() {
+function DashboardCard03({totalCherryPurchases, certified, traceableUncertified, uncertifiedUntraceable, floaters}) {
 
 
 
@@ -39,26 +39,26 @@ function DashboardCard03() {
         <div>
           <div className='flex flex-row justify-between text-[12px] mb-4'>
             <label className=''>TOTAL CHERRY PURCHASES (KG)</label>
-            <label>15,017,194KG</label>
+            <label>1{totalCherryPurchases} KG</label>
           
           </div>
           <hr></hr>
         
           <div className='flex flex-row justify-between text-[12px] mt-4 mb-2'>
             <label className=''>Certified</label>
-            <label>9,934,926 Kg</label>
+            <label>{certified} Kg</label>
           </div>
           <div className='flex flex-row justify-between text-[12px] mb-2'>
             <label className=''>Traceable unCertified</label>
-            <label>9,934,926 Kg</label>
+            <label>{traceableUncertified} Kg</label>
           </div>
           <div className='flex flex-row justify-between text-[12px] mb-2'>
             <label className=''>Uncertified Untraceable</label>
-            <label>9,934,926 Kg</label>
+            <label>{uncertifiedUntraceable} Kg</label>
           </div>
           <div className='flex flex-row justify-between text-[12px] mb-2'>
             <label className=''>Floaters</label>
-            <label>9,934,926 Kg</label>
+            <label>{floaters} Kg</label>
           </div>
         </div>
       </div>
