@@ -3,8 +3,8 @@ import { Link,useNavigate } from 'react-router-dom';
 import Transition from '../utils/Transition';
 import UserAvatar from '../images/user-avatar-32.png';
 import { useDispatch, useSelector } from "react-redux";
-import { handleToken } from '../redux/actions/fetchTokenAction';
-import { signOutUser } from '../redux/actions/logoutAction';
+import { handleToken } from '../redux/actions/auth/login.action';
+import { signOutUser } from '../redux/actions/auth/logout.action';
 function DropdownProfile({
   align
 }) {
@@ -15,15 +15,15 @@ function DropdownProfile({
   const dropdown = useRef(null);
   const navigate = useNavigate();
   const { token, decodedToken } = useSelector((state) => state.fetchToken);
-  console.log(decodedToken)
-  console.log(token)
 
 const dispatch = useDispatch()
 useEffect(() => {
   dispatch(handleToken());
 }, [dispatch]);
-const user = decodedToken?.user.Name_Full
-const Role = decodedToken?.user.Role
+const user = decodedToken?.staff.Name
+const Role = decodedToken?.staff.Role
+
+
 
   // close on click outside
   useEffect(() => {

@@ -1,8 +1,7 @@
 /* eslint-disable */
 import { toast } from 'react-toastify';
-import { allUsers } from '../../api/userApi';
-import { allUsersPending, allUsersSuccess, allUsersFail } from '../slices/UsersSlice';
-
+import { allUsers } from '../../../api/userApi';
+import { allUsersFail, allUsersPending,allUsersSuccess } from '../../slices/user/allUsersSlice';
 
   export const fetchAllUsers = () => async (dispatch) => {
     try {

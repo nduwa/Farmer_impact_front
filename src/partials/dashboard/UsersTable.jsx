@@ -4,7 +4,8 @@ import DeleteItemDrawer from "./DeleteItemDrawer";
 import AddItemDrawer from "./AddItemDrawer";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllUsers } from "../../redux/actions/UsersAction";
+import {fetchAllUsers} from '../../redux/actions/user/Users.action'
+import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
 import { RiKey2Line } from "react-icons/ri";
 import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { IoIosPhonePortrait } from "react-icons/io";
@@ -17,6 +18,7 @@ const UsersTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [allUsers, setAllUsers] = useState([]);
+  const [allStaff, setAllStaff] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState();
   const [selectedUser, setSelectedUser] = useState(null);
@@ -24,36 +26,49 @@ const UsersTable = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { users, loading } = useSelector((state) => state.users);
+  const { staffs } = useSelector((state) => state.fetchAllStaff);
 
   const itemsPerPage = 20;
   useEffect(() => {
     dispatch(fetchAllUsers());
   }, [dispatch]);
 
+
   useEffect(() => {
     if (users) {
       setAllUsers(users.data);
     }
   }, [users]);
+ 
+  useEffect(() => {
+    dispatch(fetchAllStaff());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (staffs) {
+      setAllStaff(staffs.data);
+    }
+  }, [staffs]);
+
 
   const handleSearch = (e) => {
     const searchItem = e.target.value;
     setSearchQuery(searchItem);
   };
-  const filteredUsers = searchQuery
-    ? allUsers?.filter((user) =>
-        Object.values(user).some(
+  const filteredStaff = searchQuery
+    ? allStaff?.filter((staff) =>
+        Object.values(staff).some(
           (value) =>
             typeof value === "string" &&
             value.toLowerCase().includes(searchQuery?.toLowerCase())
         )
       )
-    : allUsers;
-
-  const totalPages = Math.ceil(filteredUsers?.length / itemsPerPage);
+    : allStaff;
+  
+  const totalPages = Math.ceil(filteredStaff?.length / itemsPerPage);
   console.log("pages", totalPages);
   // Paginate the user data
-  const paginatedUsers = filteredUsers?.slice(
+  const paginatedStaffs = filteredStaff?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -66,10 +81,21 @@ const UsersTable = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
+  const getUserEmailById = (_kf_User) => {
+    const user = allUsers?.find(user => user.__kp_User === _kf_User);
+    return user ? user.Email : null;
+  };
+
+  const getUserNameById = (_kf_User) => {
+    const user = allUsers?.find(user => user.__kp_User === _kf_User);
+    return user ? user.Name_User : null;
+  };
+
   const handleClickAction = (user) => {
     setSelectedUser(user);
     setShowPasswordModel(true);
   };
+  console.log("seleeeee",selectedUser)
 
   const handlePasswordUpdate = (userId, newPassword) => {
     setPassword("");
@@ -77,6 +103,7 @@ const UsersTable = () => {
     setSelectedUser(null);
     setShowPasswordModel(true);
   };
+
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",
@@ -173,31 +200,34 @@ const UsersTable = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                  {paginatedUsers?.map((user, index) => (
+                  {paginatedStaffs?.map((staff, index) => (
                     <tr
-                      key={user.id}
+                      key={staff.id}
                       className="hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         {(currentPage - 1) * itemsPerPage + index + 1}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {formatDate(user.created_at)}
+                        {formatDate(staff.created_at)}
                       </td>
                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-900 truncate xl:max-w-xs dark:text-gray-400">
-                        {user.Name_Full}
+                      {staff.Name}
+                      
                       </td>
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {user.Email}
+                        {/* {staff.Email} */}
+                        {getUserEmailById(staff._kf_User)}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {user.Name_User}
+                      {getUserNameById(staff._kf_User)}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {user.Phone}
+                      {staff.Phone && staff.Phone.substring(0, 12)}
+ 
                       </td>
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {user.Role}
+                        {staff.Role}
                       </td>
 
                       <td className="p-4 space-x-2 whitespace-nowrap">
@@ -209,7 +239,7 @@ const UsersTable = () => {
                           aria-controls="drawer-update-product-default"
                           data-drawer-placement="right"
                           className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-300 hover:bg-green-400 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                          onClick={() => handleClickAction(user)}
+                          onClick={() => handleClickAction(staff)}
                         >
                           <RiKey2Line />
                         </button>
@@ -224,7 +254,7 @@ const UsersTable = () => {
                         <button
                           type="button"
                           id="deleteProductButton"
-                          onClick={() => navigate(`/user-administaration/access-controll/module-access/${user.id}`)}
+                          onClick={() => navigate(`/user-administaration/access-controll/module-access/${staff.id}`)}
                           data-drawer-target="drawer-delete-product-default"
                           data-drawer-show="drawer-delete-product-default"
                           aria-controls="drawer-delete-product-default"
@@ -236,7 +266,7 @@ const UsersTable = () => {
                         <button
                           type="button"
                           id="deleteProductButton"
-                          onClick={() => navigate(`/user-administaration/access-controll/mobile-access/${user.id}`)}
+                          onClick={() => navigate(`/user-administaration/access-controll/mobile-access/${staff.id}`)}
                           data-drawer-target="drawer-delete-product-default"
                           data-drawer-show="drawer-delete-product-default"
                           aria-controls="drawer-delete-product-default"
@@ -302,11 +332,11 @@ const UsersTable = () => {
             </span>{" "}
             -{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {Math.min(currentPage * itemsPerPage, allUsers?.length)}
+              {Math.min(currentPage * itemsPerPage, allStaff?.length)}
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {allUsers?.length}
+              {allStaff?.length}
             </span>
           </span>
         </div>

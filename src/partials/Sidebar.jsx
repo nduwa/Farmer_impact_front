@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, useLocation,useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.jpg";
 import { RiDashboard3Line } from "react-icons/ri";
 import { FaRegIdCard } from "react-icons/fa6";
@@ -117,7 +117,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 {(handleClick, open) => {
                   return (
                     <React.Fragment>
-                       <NavLink
+                      <NavLink
                         to="/dashboard"
                         className={`block text-slate-200 truncate transition duration-150 ${
                           open ? "hover:text-slate-200" : "hover:text-white"
@@ -134,27 +134,13 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center  ">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-900"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-900"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
-                            <RiDashboard3Line className="text-black"/>
-                            <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                            <RiDashboard3Line className="text-black" />
+                            <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               DASHBOARD
                             </span>
                           </div>
                         </div>
                       </NavLink>
-                      
                     </React.Fragment>
                   );
                 }}
@@ -180,20 +166,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
-                            <FaRegIdCard  className="text-black"/>
+                            <FaRegIdCard className="text-black" />
                             <span className="text-sm  text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Registers
                             </span>
@@ -216,7 +189,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="/signin"
+                              to="/user_registration"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -227,7 +200,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="/signup"
+                              to="/user_registration/updated_farmers"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -238,7 +211,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="/reset-password"
+                              to="/user_registration/synced_farmers"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -273,20 +246,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
-                            <FcInspection className="text-black "/>
+                            <FcInspection className="text-black " />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Inspections
                             </span>
@@ -355,20 +315,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
-                            <LiaChalkboardTeacherSolid className="text-black"/>
+                            <LiaChalkboardTeacherSolid className="text-black" />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Trainings
                             </span>
@@ -430,13 +377,27 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
             </ul>
             <ul className="mt-3">
               {/* Authentication */}
-              <SidebarLinkGroup>
+              <SidebarLinkGroup
+                activecondition={
+                  pathname.includes("user_transactions") ||
+                  pathname.includes("user-transactions/cws-daily-journals")||
+                  pathname.includes("user_transaction/add_untraceable_coffee")
+                }
+              >
                 {(handleClick, open) => {
+                  const isSCDailyJournalsActive =
+                    pathname.includes("user_transactions");
+                  const isCwsDailyJournalsActive = pathname.includes(
+                    "user-transactions/cws-daily-journals"
+                  );
+                  const isAddUntraceableCoffeeActive = pathname.includes(
+                    "user_transaction/add_untraceable_coffee"
+                  );
                   return (
                     <React.Fragment>
                       <a
                         href="#0"
-                        className={`block text-slate-200 truncate transition duration-150 ${
+                        className={`block text-slate-200  truncate transition duration-150 ${
                           open ? "hover:text-slate-200" : "hover:text-white"
                         }`}
                         onClick={(e) => {
@@ -446,21 +407,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
+                        <div className="flex items-center justify-between ">
+                          <div className="flex items-center  ">
                             <SiCoffeescript className="text-black" />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Coffee Purchases
@@ -479,23 +427,35 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           </div>
                         </div>
                       </a>
-                      <div className="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                        <ul className={`pl-9 mt-1 ${!open && "hidden"}`}>
-                          <li className="mb-1 last:mb-0">
+                      <div className="lg:hidden lg:sidebar-expanded:block 2xl:block ">
+                        <ul className={`pl-9 mt-2 ${!open && "hidden"}`}>
+                        <li className="mb-3 last:mb-0">
                             <NavLink
                               end
-                              to="/signin"
+                              style={
+                                isAddUntraceableCoffeeActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
+                              to="/user_transaction/add_untraceable_coffee"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Add untraceable coffee
+                                Add Untraceable coffee
                               </span>
                             </NavLink>
                           </li>
-                          <li className="mb-1 last:mb-0">
+                         
+
+                          <li className="mb-3 last:mb-0">
                             <NavLink
                               end
                               to="/user_transactions"
+                              style={
+                                isSCDailyJournalsActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -503,10 +463,15 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               </span>
                             </NavLink>
                           </li>
-                          <li className="mb-1 last:mb-0">
+                          <li className="mb-3 last:mb-0">
                             <NavLink
                               end
-                              to="/user_transaction/cws-daily-journals"
+                              style={
+                                isCwsDailyJournalsActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
+                              to="/user-transactions/cws-daily-journals"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -514,7 +479,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               </span>
                             </NavLink>
                           </li>
-                          <li className="mb-1 last:mb-0">
+                          <li className="mb-3 last:mb-0">
                             <NavLink
                               end
                               to="/reset-password"
@@ -525,7 +490,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               </span>
                             </NavLink>
                           </li>
-                          <li className="mb-1 last:mb-0">
+                          <li className="mb-3 last:mb-0">
                             <NavLink
                               end
                               to="/reset-password"
@@ -563,19 +528,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
                             <MdStoreMallDirectory className="text-black" />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Coffee Inventory
@@ -678,20 +630,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
-                            <FaMoneyCheckDollar className="text-black"/>
+                            <FaMoneyCheckDollar className="text-black" />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               CWS Finances
                             </span>
@@ -760,19 +699,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
                             <SiCashapp className="text-black" />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Cash Requisition
@@ -864,20 +790,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
-                            <FiSettings  className="text-black"/>
+                            <FiSettings className="text-black" />
                             <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               App Settings
                             </span>
@@ -928,8 +841,20 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
             </ul>
             <ul className="mt-3">
               {/* Authentication */}
-              <SidebarLinkGroup>
+              <SidebarLinkGroup
+                activecondition={
+                  pathname.includes("administration") ||
+                  pathname.includes(
+                    "user-administaration/access-controll/mobile-access"
+                  ) ||
+                  pathname.includes(
+                    "user-administaration/access-controll/module-access"
+                  )
+                }
+              >
                 {(handleClick, open) => {
+                  const isActive = pathname.includes("user-administration");
+
                   return (
                     <React.Fragment>
                       <a
@@ -946,21 +871,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {/* <svg
-                              className="shrink-0 h-6 w-6"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                className="fill-current text-slate-600"
-                                d="M8.07 16H10V8H8.07a8 8 0 110 8z"
-                              />
-                              <path
-                                className="fill-current text-slate-400"
-                                d="M15 12L8 6v5H0v2h8v5z"
-                              />
-                            </svg> */}
                             <FaUsersLine className="text-black" />
-                            <span className="text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                            <span
+                              className={`text-sm text-black font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200`}
+                            >
                               Manage Users
                             </span>
                           </div>
@@ -983,9 +897,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                             <NavLink
                               end
                               to="/user-administration"
+                              style={isActive ? { color: "#4F46E5" } : {}}
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
-                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                              <span
+                                className={`text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200`}
+                              >
                                 List Users
                               </span>
                             </NavLink>

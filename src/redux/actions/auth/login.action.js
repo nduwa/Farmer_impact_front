@@ -1,9 +1,10 @@
 /* eslint-disable */
 import { toast } from 'react-toastify';
-import { Userlogin } from '../../api/userApi';
+import { Userlogin } from '../../../api/userApi';
 import { jwtDecode } from 'jwt-decode';
-import { loginPending, loginFail, loginSuccess} from '../slices/AuthSlice';
-
+import { loginPending, loginFail, loginSuccess} from '../../slices/auth/loginSlice';
+import { fetchToken } from '../../slices/auth/fetchTokenSlice';
+import { decodeToken } from '../../slices/auth/fetchTokenSlice';
 export const login = (userData) => async (dispatch) => {
   try {
     dispatch(loginPending());

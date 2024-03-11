@@ -1,7 +1,6 @@
 import React , {useEffect,useState} from 'react';
-import {login} from '../../redux/actions/AuthAction'
 import { useDispatch, useSelector } from "react-redux";
-import { handleToken } from '../../redux/actions/fetchTokenAction';
+import { handleToken } from '../../redux/actions/auth/login.action';
 import { useLocation } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 
@@ -10,9 +9,8 @@ function WelcomeBanner() {
 
   const { token, decodedToken } = useSelector((state) => state.fetchToken);
   const [currentPage, setCurrentPage] = useState('dashboard');
-  console.log(decodedToken)
-  console.log(token)
 const userId = useParams()
+const journalId = useParams()
 
 
 const dispatch = useDispatch()
@@ -90,6 +88,9 @@ useEffect(() => {
             ? 'Administration Mobile Access'
             : currentPage === 'user_transaction/cws-daily-journals'
             ? 'CWS Daily Journals'
+            : currentPage === `user_transactions/staff_lot_details/:journalId`
+            ? 'Coffee Purchases Site collector details'
+
             : currentPage === 'user-administration'
             ? 'Manage application Users'
             : 'Welcome to Farmer Impact System'}
