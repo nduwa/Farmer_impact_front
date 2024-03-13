@@ -9,29 +9,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchAllTransactions } from "../../redux/actions/transactions/allTransactions.action";
-import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
-import { approveFail } from "../../redux/slices/transactions/approveJournalSlice";
-import { approveJoulnal } from "../../redux/actions/transactions/approveJournal.action";
 import { MdAdd } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
-import { IoAddCircleOutline } from "react-icons/io5";  
 import { fetchAllStation } from "../../redux/actions/station/allStations.action";
 
 const CwsDailyJournalsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [allTransactions, setAllTransactions] = useState([]);
-  const { transactions,loading } = useSelector((state) => state.fetchAllTransactions);
+  const { transactions, loading } = useSelector(
+    (state) => state.fetchAllTransactions
+  );
   const [allStation, setAllStation] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState();
-  const {approveData} = useSelector((state) => state.approveJournal);
   const { stations } = useSelector((state) => state.fetchAllStations);
-  const [selectedJournal, setSelectedJournal] = useState(null)
   const [selectedStatus, setSelectedStatus] = useState("all");
   const token = localStorage.getItem("token");
   const [itemsPerPage, setItemsPerPage] = useState(20);
- 
 
   useEffect(() => {
     dispatch(fetchAllTransactions(token));
@@ -53,11 +48,10 @@ const CwsDailyJournalsTable = () => {
       setAllStation(stations.data);
     }
   }, [stations]);
-  
-if(loading)
-{
-  return <p className=" text-center">..Loading..</p>
-}
+
+  if (loading) {
+    return <p className=" text-center">..Loading..</p>;
+  }
 
   const handleSearch = (e) => {
     const searchItem = e.target.value;
@@ -81,7 +75,6 @@ if(loading)
     return uniqueValues;
   };
 
-
   const filteredTransaction = searchQuery
     ? getUniqueValues(
         allTransactions?.filter((transaction) =>
@@ -94,12 +87,12 @@ if(loading)
         "transaction_date"
       )
     : getUniqueValues(allTransactions, "transaction_date").filter(
-      (transaction) =>
-        selectedStatus === "all" ||
-        (selectedStatus === "open" && transaction.approved !== 1) ||
-        (selectedStatus === "closed" && transaction.approved === 1)
-    );
-    console.log("filtered",filteredTransaction)
+        (transaction) =>
+          selectedStatus === "all" ||
+          (selectedStatus === "open" && transaction.approved !== 1) ||
+          (selectedStatus === "closed" && transaction.approved === 1)
+      );
+  console.log("filtered", filteredTransaction);
 
   const getUserScIdById = (_kf_Staff) => {
     const staff = allStaff?.find((staff) => staff.__kp_Staff === _kf_Staff);
@@ -107,7 +100,9 @@ if(loading)
   };
 
   const getStationName = (_kf_Station) => {
-    const station = allStation?.find((station) => station.__kp_Station === _kf_Station);
+    const station = allStation?.find(
+      (station) => station.__kp_Station === _kf_Station
+    );
     return station ? station.Name : null;
   };
 
@@ -134,47 +129,36 @@ if(loading)
   // Call the calculateTotalKilogramsByJournal function to get the sum
   const sumByJournal = calculateTotalKilogramsByJournal();
 
-
-
   const calculateTotalPrice = () => {
     const totalPriceByJournal = {};
 
-   
     allTransactions.forEach((transaction) => {
       const journal = transaction.site_day_lot;
       const cash = transaction.cash_paid || 0;
 
-     
       if (!totalPriceByJournal[journal]) {
         totalPriceByJournal[journal] = 0;
       }
 
-    
       totalPriceByJournal[journal] += cash;
     });
 
     return totalPriceByJournal;
   };
 
-  
   const totalPriceByJournal = calculateTotalPrice();
-
-
 
   const sumFloatersKG = () => {
     const sum = {};
 
-    
     allTransactions.forEach((transaction) => {
       const journal = transaction.site_day_lot;
       const kilograms = transaction.bad_kilograms;
 
-      
       if (!sum[journal]) {
         sum[journal] = 0;
       }
 
-      
       sum[journal] += kilograms;
     });
 
@@ -221,18 +205,24 @@ if(loading)
   const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   };
+  const getJournalsByDate = (cherrylotud) => {
+    // Filter transactions based on the provided date
+    const journals = allTransactions.filter(
+      (transaction) => transaction.cherry_lot_id === cherrylotud
+    );
+    return journals;
+  };
 
+  const journals = getJournalsByDate("23SR054CH0704C");
+  console.log("by cherrrrryyyyy", journals);
   const isUniquePaperSlip = (paperReceipt) => {
     const occurrences = allPaperReceipts.filter(
       (value) => value === paperReceipt
     ).length;
 
-   
-
     return occurrences === 1;
   };
 
-  
   const calculateTotalValues = () => {
     const totalValues = {
       uploadedTime: 0,
@@ -247,7 +237,6 @@ if(loading)
       siteCollector: "",
     };
 
-   
     allTransactions.forEach((transaction) => {
       totalValues.transactionDate = transaction.transaction_date;
 
@@ -262,9 +251,11 @@ if(loading)
       }
       totalValues.totalFloaters += transaction.bad_kilograms;
       totalValues.averagePrice = transaction.unitprice;
-      totalValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price;
+      totalValues.totalCoffeeValue +=
+        transaction.kilograms * transaction.unitprice +
+        transaction.bad_kilograms * transaction.bad_unit_price;
       totalValues.totalKgs =
-      totalValues.totalCertified +
+        totalValues.totalCertified +
         totalValues.totalUncertified +
         totalValues.totalFloaters;
     });
@@ -273,53 +264,42 @@ if(loading)
   };
   const totalValues = calculateTotalValues();
 
-
-
-
-
-
-
-
-
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="py-4 ml-0 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
         <div className="items-center  justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center mb-4 sm:mb-0">
-            
             <div className="flex items-center sm:justify-end">
               <div className="flex pl-2 space-x-1 mt-1">
-              {/* <p>Records</p> */}
-              <div>
-                <span>Record</span>
-               <select
-                  name=""
-                  value={itemsPerPage}
-                  onChange={handleItemsPerPageChange}
-                  className="rounded-lg w-40"
-                >
-                  <option value="20">20</option>
-                  <option value="40">40</option>
-                  <option value="60">60</option>
-                </select>
-              </div>
-          
-          {/* <p>Status</p> */}
-          <div>
-            <span>Status</span>
-            <select
-        name=""
-        value={selectedStatus}
-        onChange={handleStatusChange}
-        className="rounded-lg w-40"
-      >
-        <option value="all">All</option>
-        <option value="open">Open</option>
-        <option value="closed">Closed</option>
-      </select>
-         
-          </div>
-         
+                {/* <p>Records</p> */}
+                <div>
+                  <span>Record</span>
+                  <select
+                    name=""
+                    value={itemsPerPage}
+                    onChange={handleItemsPerPageChange}
+                    className="rounded-lg w-40"
+                  >
+                    <option value="20">20</option>
+                    <option value="40">40</option>
+                    <option value="60">60</option>
+                  </select>
+                </div>
+
+                {/* <p>Status</p> */}
+                <div>
+                  <span>Status</span>
+                  <select
+                    name=""
+                    value={selectedStatus}
+                    onChange={handleStatusChange}
+                    className="rounded-lg w-40"
+                  >
+                    <option value="all">All</option>
+                    <option value="open">Open</option>
+                    <option value="closed">Closed</option>
+                  </select>
+                </div>
               </div>
             </div>
             <form className="sm:pr-3" action="#" method="GET">
@@ -327,8 +307,7 @@ if(loading)
                 Search
               </label>
               <div className="relative w-48 ml-3 mt-1 sm:w-64 mr-1 xl:w-96">
-               <span>Search by CWS Name, Cherry Lot ID ...
-                </span>
+                <span>Search by CWS Name, Cherry Lot ID ...</span>
                 <input
                   type="text"
                   name="email"
@@ -338,69 +317,61 @@ if(loading)
                   placeholder="Search for products"
                 />
               </div>
-             
             </form>
             <div className="flex pl-2 space-x-1 -ml-3">
               <div>
                 <span>From</span>
-                <input type="date"
+                <input
+                  type="date"
                   class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-
-           />
+                />
               </div>
               <div>
                 <span>To</span>
-                <input type="date"
+                <input
+                  type="date"
                   class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-30  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-
-           />
+                />
               </div>
-           
-           
             </div>
           </div>
-
         </div>
       </div>
       <div className="flex flex-row left-4 items-center justify-center py-8 gap-3">
         <DashboardCard02
-        cardTitle="TOTAL CHERRY PURCHASES"
-        totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
-        certified={totalValues.totalCertified}
-        traceableUncertified={totalValues.totalCertified}
-        uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
-        floaters={totalValues.totalFloaters.toLocaleString()}
+          cardTitle="TOTAL CHERRY PURCHASES"
+          totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+          certified={totalValues.totalCertified.toLocaleString()}
+          traceableUncertified={totalValues.totalCertified.toLocaleString()}
+          uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+          floaters={totalValues.totalFloaters.toLocaleString()}
         />
         <DashboardCard02
-        cardTitle="PROJECTED PARCHMENT (KG)"
-         totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
-         certified={totalValues.totalCertified}
-         traceableUncertified={totalValues.totalCertified}
-         uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
-         floaters={totalValues.totalFloaters.toLocaleString()}
+          cardTitle="PROJECTED PARCHMENT (KG)"
+          totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+          certified={totalValues.totalCertified.toLocaleString()}
+          traceableUncertified={totalValues.totalCertified.toLocaleString()}
+          uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+          floaters={totalValues.totalFloaters.toLocaleString()}
         />
         <DashboardCard02
-         cardTitle="PREVIOUS APPROVED PRICE"
-        totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
-        certified={totalValues.totalCertified}
-        traceableUncertified={totalValues.totalCertified}
-        uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
-        floaters={totalValues.totalFloaters.toLocaleString()}
+          cardTitle="PREVIOUS APPROVED PRICE"
+          totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+          certified={totalValues.totalCertified.toLocaleString()}
+          traceableUncertified={totalValues.totalCertified.toLocaleString()}
+          uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+          floaters={totalValues.totalFloaters.toLocaleString()}
         />
         <DashboardCard02
-        cardTitle="CURRENT PURCHASE PRICE"
-         totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
-         certified={totalValues.totalCertified}
-         traceableUncertified={totalValues.totalCertified}
-         uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
-         floaters={totalValues.totalFloaters.toLocaleString()}/>
-
+          cardTitle="CURRENT PURCHASE PRICE"
+          totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
+          certified={totalValues.totalCertified.toLocaleString()}
+          traceableUncertified={totalValues.totalCertified.toLocaleString()}
+          uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
+          floaters={totalValues.totalFloaters.toLocaleString()}
+        />
       </div>
-      <div className="flex flex-row left-4 items-center justify-center py-8 gap-3">
-
-      </div>
-
-
+      <div className="flex flex-row left-4 items-center justify-center py-8 gap-3"></div>
 
       <div className="flex flex-col">
         <div className="overflow-x-auto">
@@ -409,14 +380,10 @@ if(loading)
               <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
-                    <th scope="col"
-                    colSpan={4}
-                     className="p-4">
-                     
-                    </th>
+                    <th scope="col" colSpan={4} className="p-4"></th>
                     <th
                       scope="col"
-                   colSpan={2}
+                      colSpan={2}
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
                       CERTIFIED
@@ -424,7 +391,6 @@ if(loading)
                     <th
                       scope="col"
                       colSpan={2}
-                    
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
                       UNCERTIFIED
@@ -432,24 +398,21 @@ if(loading)
                     <th
                       scope="col"
                       colSpan={3}
-
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
                       BUCKET COUNT
                     </th>
                     <th
                       scope="col"
-                  colSpan={3}
+                      colSpan={3}
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Skin Drying Grade Weighing	
+                      Skin Drying Grade Weighing
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                
-                    </th>
+                    ></th>
                   </tr>
 
                   <tr>
@@ -460,191 +423,167 @@ if(loading)
                     </th> */}
                     <th
                       scope="col"
-                  
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      CWS.NAME	
+                      CWS.NAME
                     </th>
                     <th
                       scope="col"
-                 
-                    
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                   STATUS	
+                      STATUS
                     </th>
                     <th
                       scope="col"
-                   
-
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                  PURCHASE.DATE	
+                      PURCHASE.DATE
                     </th>
                     <th
                       scope="col"
-                  
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                     CHERRY.LOT.ID
+                      CHERRY.LOT.ID
                     </th>
                     <th
                       scope="col"
-                  
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                    KG
+                      KG
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                     PX	
+                      PX
                     </th>
                     <th
                       scope="col"
-                  
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                    KG
+                      KG
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                     PX	
-                    </th> 
-                    <th
-                      scope="col"
-                  
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                   GRADE.A	
+                      PX
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-               GRADE.B	
+                      GRADE.A
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-               GRADE.C
+                      GRADE.B
                     </th>
                     <th
                       scope="col"
-                  
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                   GRADE.A	
+                      GRADE.C
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-               GRADE.B	
+                      GRADE.A
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-               GRADE.C
+                      GRADE.B
                     </th>
                     <th
                       scope="col"
-                     
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-             FARMERS
+                      GRADE.C
+                    </th>
+                    <th
+                      scope="col"
+                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                    >
+                      FARMERS
                     </th>
                   </tr>
-                
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                {paginatedTransactions?.map((journal, index) => 
-           
-                  <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <td className="w-4 p-4">
-                    {getStationName(journal._kf_Station)}
-                    </td>
-                    <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                    {journal.fm_approval === 1 ? (
-                      <button className="bg-red-500 text-white w-24 h-8 rounded-md">Open</button>
-                    ) : (
-                      <button
-                        className="bg-green-500 text-white w-24 h-8 rounded-md"
-                       
-                      >
-                        Closed
-                      </button>
-                    )}
-    
-                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {journal.transaction_date}
-                    </td>
-                    <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                    <a
-                          href="##3"
+                  {paginatedTransactions?.map((journal, index) => (
+                    <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <td className="w-4 p-4">
+                        {getStationName(journal._kf_Station)}
+                      </td>
+                      <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                        {journal.fm_approval === 0 ? (
+                          <button className="bg-red-500 text-white w-24 h-8 rounded-md">
+                            Open
+                          </button>
+                        ) : (
+                          <button className="bg-green-500 text-white w-24 h-8 rounded-md">
+                            Closed
+                          </button>
+                        )}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {journal.transaction_date}
+                      </td>
+                      <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                        <a
+                          href={`/user-transactions/cherry_lot_details/${journal.cherry_lot_id}`}
                           className="text-blue-500 hover:text-gray-500"
                         >
                           #{journal.site_day_lot}
                         </a>
-                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {journal.certified === 1
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {journal.certified === 1
                           ? sumByJournal[
                               journal.transaction_date
                             ]?.toLocaleString()
                           : ""}
-                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {journal.certified === 1
-                          ? journal.unitprice
-                          : ""}
-                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {journal.certified === 1
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {journal.certified === 1 ? journal.unitprice : ""}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {journal.certified === 1
                           ? ""
                           : sumByJournal[
                               journal.transaction_date?.toLocaleString()
                             ]}
-                    </td>
-                    <td className="p-4 space-x-2 whitespace-nowrap">
-                    {journal.certified === 1
-                          ?""
-                          :  journal.unitprice}
-                    </td>
-                    <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
-                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
-                    </td>
-                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
-                    </td>
-                    <td className="p-4 space-x-2 whitespace-nowrap">
-                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
-                    </td>
-                    <td className="p-4 space-x-2 whitespace-nowrap">
-                    < MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />  
-                    </td>
-                    <td className="p-4 space-x-2 whitespace-nowrap">
-                     <FaPeopleGroup className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"/>
-                    </td>
-                  </tr>
-               )}
+                      </td>
+                      <td className="p-4 space-x-2 whitespace-nowrap">
+                        {journal.certified === 1 ? "" : journal.unitprice}
+                      </td>
+                      <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />{" "}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      </td>
+                      <td className="p-4 space-x-2 whitespace-nowrap">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      </td>
+                      <td className="p-4 space-x-2 whitespace-nowrap">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      </td>
+                      <td className="p-4 space-x-2 whitespace-nowrap">
+                        <FaPeopleGroup className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -697,7 +636,10 @@ if(loading)
             </span>{" "}
             -{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {Math.min(currentPage * itemsPerPage, filteredTransaction?.length)}
+              {Math.min(
+                currentPage * itemsPerPage,
+                filteredTransaction?.length
+              )}
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
@@ -709,7 +651,7 @@ if(loading)
           <a
             href="#"
             onClick={handlePrevPage}
-            className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-500 hover:bg-green-700 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
           >
             <svg
               className="w-5 h-5 mr-1 -ml-1"
@@ -726,9 +668,9 @@ if(loading)
             Previous
           </a>
           <a
-              onClick={handleNextPage}
+            onClick={handleNextPage}
             href="#"
-            className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-500 hover:bg-green-700 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
           >
             Next
             <svg
