@@ -18,6 +18,7 @@ import AccessControl from "./pages/AccessControl";
 import TransactionDetails from "./pages/TransactionDetails";
 import AddUntraceableCoffee from "./pages/AddUntraceableCoffee";
 import CherryLotDetails from "./pages/CherryLotDetails";
+import SiteDayLotDetails from "./pages/SiteDayLotDetails";
 
 function App() {
   const location = useLocation();
@@ -66,7 +67,11 @@ function App() {
           exact
           path="/user-transactions/cherry_lot_details/:cherryLotId"
           element={<CherryLotDetails />}
-        />
+        /> <Route
+        exact
+        path="/user-transactions/site_day_lot_details/:journalId"
+        element={<SiteDayLotDetails />}
+      />
         <Route
           exact
           path="/user_transaction/add_untraceable_coffee"
@@ -76,5 +81,4 @@ function App() {
     </>
   );
 }
-
 export default App;

@@ -237,6 +237,7 @@ const CherryLotDetailsTable = () => {
       totalKgs,
     };
   };
+
   const certifications = filteredJournals?.map(
     (transaction) => transaction.certification
   );
@@ -245,20 +246,51 @@ const CherryLotDetailsTable = () => {
     (transaction) => transaction.transaction_date
   );
 
-  const getFarmersUnderJournal = (journal) => {
-    const farmers = [];
 
-    filteredJournals?.forEach((transaction) => {
-      const farmerName = transaction.farmername;
-
-      if (farmerName) {
-        farmers.push(farmerName);
+  const getFarmerUnderJournal = (journal) => {
+    const farmers = new Set(); // Using a Set to automatically maintain uniqueness
+    
+    allJournals.forEach((transaction) => {
+      if (transaction.site_day_lot === journal.site_day_lot) {
+        const farmerName = transaction.farmername;
+        if (farmerName) {
+          farmers.add(farmerName); // Add farmer name to the set
+        }
       }
     });
-
-    return farmers;
+    
+    return Array.from(farmers); // Convert set to array and return
   };
+  
+  // Example usage:
+  filteredJournals.forEach((journal) => {
+    const farmersUnderJournal = getFarmerUnderJournal(journal);
+    console.log(`Farmers under journal ${journal.site_day_lot}:`, farmersUnderJournal);
+  });
+  
 
+  let totalFarmers = 0;
+
+filteredJournals.forEach((journal) => {
+  const farmersUnderJournal = getFarmerUnderJournal(journal);
+  totalFarmers += farmersUnderJournal.length;
+});
+
+console.log("Total farmers contributed:", totalFarmers);
+
+
+  const getTransactionsUnderJournal = (journal) => {
+    return allJournals.filter((transaction) => {
+      return transaction.site_day_lot === journal.site_day_lot;
+    });
+  };
+  
+  // Example usage:
+  filteredJournals.forEach((journal) => {
+    const transactionsUnderJournal = getTransactionsUnderJournal(journal);
+    console.log(`Transactions under journal ${journal.site_day_lot}:`, transactionsUnderJournal);
+  });
+  
   const handleClickAction = (transaction) => {
     setSelectedUser(transaction);
     setShowTransactionModel(true);
@@ -337,7 +369,7 @@ const CherryLotDetailsTable = () => {
                     Number of contributing farmers
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {/* {totalValues.totalUncertified} */}
+                    {totalFarmers}
                   </td>
                 </tr>
                 <tr className="border-b">
@@ -381,7 +413,7 @@ const CherryLotDetailsTable = () => {
                     Total Kgs Left
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {totalValues.totalKgs}
+                    {totalValues.totalKgs.toLocaleString()}
                   </td>
                 </tr>
                 <tr className="border-b">
@@ -509,10 +541,10 @@ const CherryLotDetailsTable = () => {
                         {journal.site_day_lot}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {calculateTotalKilogramsPurchased(journal).totalKgs}
+                        {calculateTotalKilogramsPurchased(journal).totalKgs.toLocaleString()}
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {getFarmersUnderJournal(journal).length}
+                        {getFarmerUnderJournal(journal).length}
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {calculateTotalKilogramsPurchased(journal).price}
@@ -523,11 +555,15 @@ const CherryLotDetailsTable = () => {
                         ].toLocaleString()}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                   
                         {journal.approved === 1 ? (
-                          <button className="bg-green-500 text-white w-24 h-8 rounded-md">
+                          <button 
+                          onClick={()=> navigate(`/user-transactions/site_day_lot_details/${journal.site_day_lot}`)}
+                          className="bg-green-500 text-white w-24 h-8 rounded-md">
                             Approved
                           </button>
-                        ) : (
+                         
+                          ) : (
                           <button
                             className="bg-orange-300 text-white w-24 h-8 rounded-md"
                             onClick={() =>
