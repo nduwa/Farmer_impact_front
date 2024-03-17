@@ -194,13 +194,17 @@ const SiteDayLotDeatilsTable = () => {
   const unCertifiedTransactionsUnderJournal = getUnCertifiedTransactionsUnderJournal(journal);
   console.log(`uncertified Transactions under journal:`, unCertifiedTransactionsUnderJournal);
   
-  // Example usage:
-  // paginatedTransactions.forEach((journal) => {
-  //   const transactionsUnderJournal = getTransactionsUnderJournal(journal);
-  //   console.log(`Transactions under journal ${journal.site_day_lot}:`, transactionsUnderJournal);
-  // });
   
+  const paginatedcertifiedTransactions = certifiedTransactionsUnderJournal?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
+  
+  const paginatedUnCertifiedTransactions = unCertifiedTransactionsUnderJournal?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const allPaperReceipts = journals.map(
     (transaction) => transaction.paper_receipt
@@ -214,7 +218,6 @@ const SiteDayLotDeatilsTable = () => {
 
     return occurrences === 1;
   };
-
   const calculateTotalValues = () => {
     const totalValues = {
       uploadedTime: 0,
@@ -237,37 +240,25 @@ const SiteDayLotDeatilsTable = () => {
 
       if (transaction.certified === 1) {
         totalValues.totalCertified += transaction.kilograms;
+        totalValues.totalUncertified = 0;
       } else {
         totalValues.totalUncertified += transaction.kilograms;
-      }
-
-      if (transaction.certified === 1) {
-        totalValues.averagePrice = transaction.unitprice;
-      } else {
-        totalValues.averagePrice = transaction.bad_unit_price;
-      }
-
-
-      if (transaction.certified === 1) {  
-      totalValues.totalCoffeeValue += totalValues.totalCertified*transaction.unitprice ;
-      } else {
-        totalValues.totalCoffeeValue += totalValues.totalUncertified*transaction.bad_unit_price ;
+        totalValues.totalCertified = 0;
       }
       totalValues.totalFloaters += transaction.bad_kilograms;
-      if (transaction.certified === 1) {     
-        totalValues.totalKgs = totalValues.totalCertified +
+      totalValues.averagePrice = transaction.unitprice;
+      totalValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price;
+      totalValues.totalKgs =
+      totalValues.totalCertified +
+        totalValues.totalUncertified +
         totalValues.totalFloaters;
-        } else {
-          totalValues.totalKgs = totalValues.totalUncertified +
-          totalValues.totalFloaters;
-        }
-     
     });
 
     return totalValues;
   };
 //calculating totals
   const totalValues = calculateTotalValues();
+  console.log("totolValus",totalValues)
 const calculateTotalCertifiedValues = () => {
   const totalCertifiedValues = {
     totalFloaters: 0,
@@ -277,10 +268,11 @@ const calculateTotalCertifiedValues = () => {
     totalUnTraceableKg: 0,
     totalKgs: 0,
     siteCollector: "",
+    totalUncertified:0
   };
 
  
-  journals.forEach((transaction) => {
+  certifiedTransactionsUnderJournal.forEach((transaction) => {
     totalCertifiedValues.transactionDate = transaction.transaction_date;
 
     totalCertifiedValues.uploadedTime = transaction.uploaded_at;
@@ -290,11 +282,9 @@ const calculateTotalCertifiedValues = () => {
       totalCertifiedValues.totalCertified += transaction.kilograms;
       totalCertifiedValues.totalFloaters += transaction.bad_kilograms;
       totalCertifiedValues.averagePrice = transaction.unitprice;
-      totalCertifiedValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice;
+      totalCertifiedValues.totalCoffeeValue += transaction.kilograms*transaction.unitprice ;
       totalCertifiedValues.totalKgs =
-      totalCertifiedValues.totalCertified +
-        totalCertifiedValues.totalFloaters;
-      
+      totalCertifiedValues.totalCertified 
     }
     
   });
@@ -303,6 +293,7 @@ const calculateTotalCertifiedValues = () => {
 };
 //calculating totals
 const totalCertifiedValues = calculateTotalCertifiedValues();
+console.log("certified,", totalCertifiedValues)
 
 
 
@@ -321,7 +312,7 @@ const calculateTotalUncertifiedValues = () => {
   };
 
  
-  journals.forEach((transaction) => {
+  unCertifiedTransactionsUnderJournal.forEach((transaction) => {
     totalUncertifiedValues.transactionDate = transaction.transaction_date;
 
     totalUncertifiedValues.uploadedTime = transaction.uploaded_at;
@@ -332,8 +323,8 @@ const calculateTotalUncertifiedValues = () => {
       
     }
     totalUncertifiedValues.totalFloaters += transaction.bad_kilograms;
-    totalUncertifiedValues.averagePrice = transaction.bad_unit_price;
-    totalUncertifiedValues.totalCoffeeValue += transaction.bad_kilograms*transaction.bad_unit_price;
+    totalUncertifiedValues.averagePrice = transaction.unitprice;
+    totalUncertifiedValues.totalCoffeeValue = totalUncertifiedValues.totalUncertified*transaction.unitprice;
     totalUncertifiedValues.totalKgs =
       totalUncertifiedValues.totalUncertified +
       totalUncertifiedValues.totalFloaters;
@@ -343,7 +334,7 @@ const calculateTotalUncertifiedValues = () => {
 };
 //calculating totals
 const totalUncertifiedValues = calculateTotalUncertifiedValues();
-
+console.log("uncertified,", totalUncertifiedValues)
 
   const formatDate = (dateString) => {
     const options = {
@@ -458,7 +449,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
                     UNCERTIFIED KG
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {totalValues.totalUncertified}
+                    {totalValues.totalUncertified.toLocaleString()}
                   </td>
                   <th
                     scope="col"
@@ -467,7 +458,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
                     UNTRACEABLE KG
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {totalValues.totalUncertified}
+                    {totalValues.totalUncertified.toLocaleString()}
                   </td>
                 </tr>
                 <tr className="border-b">
@@ -478,7 +469,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
                     FLOATERS KG
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {totalValues.totalFloaters}
+                    {totalValues.totalFloaters.toLocaleString()}
                   </td>
                   <th
                     scope="col"
@@ -571,13 +562,13 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                  {certifiedTransactionsUnderJournal?.map((transaction, index) => (
+                  {paginatedcertifiedTransactions?.map((transaction, index) => (
                     <tr
                       key={transaction.id}
                       className="hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                              {index+1}
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                       </td>
 
                       <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -641,7 +632,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
 
                       </td>
                       <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
-                        {totalCertifiedValues.totalKgs.toLocaleString()} kgs
+                        {totalCertifiedValues.totalCertified.toLocaleString()} kgs
                       </td>
                       <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
                        {totalCertifiedValues.totalCoffeeValue.toLocaleString()}
@@ -715,11 +706,11 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
             </span>{" "}
             -{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {Math.min(currentPage * itemsPerPage, journals?.length)}
+              {Math.min(currentPage * itemsPerPage, certifiedTransactionsUnderJournal?.length)}
             </span>{" "}
             of{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              {journals?.length}
+              {certifiedTransactionsUnderJournal?.length}
             </span>
           </span>
         </div>
@@ -806,7 +797,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
                     className="hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {index+1}
+                    {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
 
                     <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -831,7 +822,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
                     </td>
                    
                     <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                      {transaction.bad_unit_price}
+                      {transaction.unitprice}
                     </td>
                     <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                       {transaction.transaction_type}
@@ -874,7 +865,7 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
 
                       </td>
                       <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
-                      {totalUncertifiedValues.totalKgs.toLocaleString()} kgs
+                      {totalUncertifiedValues.totalUncertified.toLocaleString()} kgs
 
                      </td>
                       <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
@@ -895,6 +886,60 @@ const totalUncertifiedValues = calculateTotalUncertifiedValues();
           </div>
         </div>
       </div>
+      {/* <div className="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700">
+        <div className="flex items-center mb-4 sm:mb-0">
+          <a
+            href="#"
+            className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+            onClick={handlePrevPage}
+          >
+            <svg
+              className="w-7 h-7"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </a>
+          <a
+            href="#"
+            className="inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+            onClick={handleNextPage}
+          >
+            <svg
+              className="w-7 h-7"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </a>
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+            Showing{" "}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {(currentPage - 1) * itemsPerPage + 1}
+            </span>{" "}
+            -{" "}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {Math.min(currentPage * itemsPerPage, unCertifiedTransactionsUnderJournal?.length)}
+            </span>{" "}
+            of{" "}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {unCertifiedTransactionsUnderJournal?.length}
+            </span>
+          </span>
+        </div>
+      </div>  */}
 
       {/* update drawer */}
       <UpdateItemDrawer />

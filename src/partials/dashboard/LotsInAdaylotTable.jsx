@@ -8,14 +8,18 @@ import { fetchAllStaff } from "../../redux/actions/staff/getAllStaff.action";
 import { fetchAllStation } from "../../redux/actions/station/allStations.action";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchAllJournalsByCherryLotId } from "../../redux/actions/transactions/journalsByCherryLotId.action";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
-const CherryLotDetailsTable = () => {
+
+const LotsInAdaylotTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
 
   const itemsPerPage = 20;
   const cherryLotId = useParams();
+  console.log("cherrylot", cherryLotId)
 
   const [journals, setJournals] = useState([]);
   const [allStation, setAllStation] = useState([]);
@@ -261,7 +265,6 @@ const CherryLotDetailsTable = () => {
     return Array.from(farmers); // Convert set to array and return
   };
   
-  // Example usage:
   filteredJournals.forEach((journal) => {
     const farmersUnderJournal = getFarmerUnderJournal(journal);
     console.log(`Farmers under journal ${journal.site_day_lot}:`, farmersUnderJournal);
@@ -308,13 +311,47 @@ console.log("Total farmers contributed:", totalFarmers);
       });
   };
 
+
+  const handleDownload = () => {
+    const table = document.querySelector(".table-fixed");
+    const rows = table.querySelectorAll("tr");
+  
+    const data = [];
+    
+    
+    const headers = Array.from(rows[0].querySelectorAll("th")).map(header => header.innerText);
+    data.push(headers.join(","));
+  
+    rows.forEach((row, index) => {
+      if (index !== 0) { 
+        const rowData = [];
+        const cells = row.querySelectorAll("td");
+        cells.forEach((cell) => {
+          rowData.push(cell.innerText);
+        });
+        data.push(rowData.join(","));
+      }
+    });
+  
+    const csvContent = "data:text/csv;charset=utf-8," + data.join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Cherry_Lot_Summary.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  
+
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
         <span className="font-large font-bold ml-12 ">Cherry lot summary</span>
         <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex w-full items-center mb-4  sm:mb-0 ">
-            <table className="min-w-full  divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
+            <table className="min-w-full  divide-y divide-gray-200  mt-8  dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
               <thead className=" dark:bg-gray-700">
                 <tr className="border-b">
                   <th
@@ -453,6 +490,7 @@ console.log("Total farmers contributed:", totalFarmers);
           </div>
         </div>
       </div>
+      <p className="mt-3 font-bold">Farmer Contributions</p>
       <div className="flex flex-col">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
@@ -461,147 +499,107 @@ console.log("Total farmers contributed:", totalFarmers);
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
                     <th scope="col" className="p-4">
-                      CWS Name
+                    CHERRY.LOT.NO	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Site Collector Name
+                     FARMER
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Site Collector ID
+                     CERT.ID	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      SC Daily Journal ID
+                     	DELIVERY.SITE
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Total KG Contributed
+                      KG.DELIVERED
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Number of farmers who contributed
+                      FARMER.PYT
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Farmer Price per KG
+                      FTR
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      Total Farmer Payment
+                      PAPER.RECEIPT
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      SCDJ Status
+                     PAYMENT TYPE
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      SCDJ Photo
+                    EDITED.
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                  {paginatedjournals?.map((journal, index) => (
+                
                     <tr
-                      key={journal.id}
+                    
                       className="hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {getStationName(journal._kf_Station)}
+                    Lorem ipsum 
                       </td>
 
-                      <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        {getUserNameById(journal._kf_Staff)}
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    Lorem ipsum 
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {getUserScIdById(journal._kf_Staff)}
+                    Lorem ipsum 
                       </td>
 
-                      <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                        {journal.site_day_lot}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {calculateTotalKilogramsPurchased(journal).totalKgs.toLocaleString()}
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    Lorem ipsum 
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {getFarmerUnderJournal(journal).length}
+                    Lorem ipsum 
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {calculateTotalKilogramsPurchased(journal).price}
+                    Lorem ipsum 
                       </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {totalPriceByJournal[
-                          journal.site_day_lot
-                        ].toLocaleString()}
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    Lorem ipsum 
                       </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                   
-                        {journal.approved === 1 ? (
-                          <button 
-                          onClick={()=> navigate(`/user-transactions/site_day_lot_details/${journal.site_day_lot}`)}
-                          className="bg-green-500 text-white w-24 h-8 rounded-md">
-                            Approved
-                          </button>
-                         
-                          ) : (
-                          <button
-                            className="bg-orange-300 text-white w-24 h-8 rounded-md"
-                            onClick={() =>
-                              navigate(
-                                `/user_transactions/staff_lot_details/${journal.site_day_lot}`
-                              )
-                            }
-                          >
-                            Pending...
-                          </button>
-                        )}
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    Lorem ipsum 
                       </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {journal.approved === 1 ? (
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `/user_transactions/staff_lot_details/${journal.site_day_lot}`
-                              )
-                            }
-                            className="bg-red-500 text-white w-24 h-8 rounded-md"
-                          >
-                            No photo
-                          </button>
-                        ) : (
-                          <button
-                            className="bg-red-500 text-white w-24 h-8 rounded-md"
-                            onClick={() =>
-                              navigate(
-                                `/user_transactions/staff_lot_details/${journal.site_day_lot}`
-                              )
-                            }
-                          >
-                            No photo
-                          </button>
-                        )}
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    Lorem ipsum 
+                      </td>
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    No
                       </td>
                     </tr>
-                  ))}
+             
+               
+                   
+                 
                 </tbody>
               </table>
             </div>
@@ -665,9 +663,10 @@ console.log("Total farmers contributed:", totalFarmers);
       </div>
 
       <div className="flex items-center justify-center">
-        <button className="bg-green-500 p-4 mt-5 rounded-lg text-white ">
-          Save and submit to RTC{" "}
-        </button>
+      <button className="bg-green-500 p-4 mt-5 rounded-lg text-white" onClick={handleDownload}>
+  DOWNLOAD REPORT
+</button>
+
       </div>
 
       {/* update drawer */}
@@ -682,4 +681,4 @@ console.log("Total farmers contributed:", totalFarmers);
   );
 };
 
-export default CherryLotDetailsTable;
+export default LotsInAdaylotTable;

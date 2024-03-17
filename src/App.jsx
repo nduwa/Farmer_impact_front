@@ -19,6 +19,7 @@ import TransactionDetails from "./pages/TransactionDetails";
 import AddUntraceableCoffee from "./pages/AddUntraceableCoffee";
 import CherryLotDetails from "./pages/CherryLotDetails";
 import SiteDayLotDetails from "./pages/SiteDayLotDetails";
+import LotsInAdayLot from "./pages/LotsInAdayLot";
 
 function App() {
   const location = useLocation();
@@ -71,6 +72,11 @@ function App() {
         exact
         path="/user-transactions/site_day_lot_details/:journalId"
         element={<SiteDayLotDetails />}
+      />
+      <Route
+        exact
+        path="/user-transactions/lots_in_a_day_lot/:cherryLotId"
+        element={<LotsInAdayLot />}
       />
         <Route
           exact

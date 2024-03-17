@@ -380,19 +380,22 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               <SidebarLinkGroup
                 activecondition={
                   pathname.includes("user_transactions") ||
-                  pathname.includes("user-transactions/cws-daily-journals")||
-                  pathname.includes("user_transaction/add_untraceable_coffee")
+                  pathname.includes("cws-daily-journals")||
+                  pathname.includes("add_untraceable_coffee")||
+                  pathname.includes("lots_in_a_day_lot")||
+                  pathname.includes("cherry_lot_details")||
+                  pathname.includes("site_day_lot_details")
+
                 }
               >
                 {(handleClick, open) => {
                   const isSCDailyJournalsActive =
                     pathname.includes("user_transactions");
-                  const isCwsDailyJournalsActive = pathname.includes(
-                    "user-transactions/cws-daily-journals"
-                  );
+                  const isCwsDailyJournalsActive = pathname.includes("user-transactions/cws-daily-journals") || pathname.includes("lots_in_a_day_lot")||pathname.includes("cherry_lot_details")||pathname.includes("site_day_lot_details");
                   const isAddUntraceableCoffeeActive = pathname.includes(
                     "user_transaction/add_untraceable_coffee"
                   );
+              
                   return (
                     <React.Fragment>
                       <a

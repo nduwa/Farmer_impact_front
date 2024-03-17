@@ -580,7 +580,9 @@ const CwsDailyJournalsTable = () => {
                         <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
                       </td>
                       <td className="p-4 space-x-2 whitespace-nowrap">
-                        <FaPeopleGroup className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                        <FaPeopleGroup 
+                        onClick={()=> navigate(`/user-transactions/lots_in_a_day_lot/${journal.cherry_lot_id}`)}
+                        className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
                       </td>
                     </tr>
                   ))}
