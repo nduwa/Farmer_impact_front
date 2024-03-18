@@ -46,6 +46,22 @@ export const allTransactionsByJournalId = (token, journalId) => {
   });
 };
 
+export const allTransactionsByCherryLotId = (token, cherryLotId) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`${url}/coffeePurchase/dailyLot/${cherryLotId}`, {
+        headers: { auth_token: ` ${token}` },
+      })
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        if (error.response.data !== undefined) {
+          reject(error.response.data);
+        }
+        reject(error);
+      });
+  });
+};
+
 export const removeTransactionById = (token, id) => {
   return new Promise((resolve, reject) => {
     axios

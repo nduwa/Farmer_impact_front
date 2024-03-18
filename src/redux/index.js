@@ -17,6 +17,8 @@ import commissionSlice from "./slices/transactions/addCommisionPrice";
 import approveJournalSlice from "./slices/transactions/approveJournalSlice";
 import allStationSlice from "./slices/station/allStationsSlice";
 import journalsByCherryLotSlice from "./slices/transactions/journalsByCherryLotSlice";
+import addPermissionsSlice from "./slices/accessModules/addPermissionsSlice";
+import transactionByCherryLotSlice from "./slices/transactions/transactionByCherryLotSlice";
 const store = configureStore({
   reducer: {
     login,
@@ -37,6 +39,9 @@ const store = configureStore({
     approveJournal: approveJournalSlice,
     fetchAllStations: allStationSlice,
     fetchAllJournalsByCherryLotId: journalsByCherryLotSlice,
+    addPermissions:addPermissionsSlice,
+    fetchAllTransactionsByCherryLot: transactionByCherryLotSlice,
+
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

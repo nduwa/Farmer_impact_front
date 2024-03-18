@@ -681,49 +681,51 @@ console.log("formaaa",formattedTransportFeesCherry)
                           transaction.id
                         ]?.toLocaleString()}
                       </td>
+                   
                       <td className="p-4 space-x-2 whitespace-nowrap">
-                        <button
-                          type="button"
-                          id="updateProductButton"
-                          data-drawer-target="drawer-update-product-default"
-                          data-drawer-show="drawer-update-product-default"
-                          aria-controls="drawer-update-product-default"
-                          data-drawer-placement="right"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-500 hover:bg-green-400 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                          onClick={() => handleClickAction(transaction)}
-                        >
-                          <MdModeEdit />
-                        </button>
-                        {showTransactionModel && selectedUser && (
-                          <EditTransactionModel
-                            transaction={selectedUser}
-                            onClose={() => setShowTransactionModel(false)}
-                            onSubmit={handleTransactionUpdate}
-                          />
-                        )}
+                      {transaction.approved === 1 && ( // Show buttons only for pending transactions
+                        <>
+                          <button
+                            type="button"
+                            id="updateProductButton"
+                            data-drawer-target="drawer-update-product-default"
+                            data-drawer-show="drawer-update-product-default"
+                            aria-controls="drawer-update-product-default"
+                            data-drawer-placement="right"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-500 hover:bg-green-400 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            onClick={() => handleClickAction(transaction)}
+                          >
+                            <MdModeEdit />
+                          </button>
+                          {showTransactionModel && selectedUser && (
+                            <EditTransactionModel
+                              transaction={selectedUser}
+                              onClose={() => setShowTransactionModel(false)}
+                              onSubmit={handleTransactionUpdate}
+                            />
+                          )}
 
-                        <button
-                          type="button"
-                          id="deleteProductButton"
-                          onClick={() =>
-                           openModal(transaction.id)
-                          }
-                          data-drawer-target="drawer-delete-product-default"
-                          data-drawer-show="drawer-delete-product-default"
-                          aria-controls="drawer-delete-product-default"
-                          data-drawer-placement="right"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-500 rounded-lg hover:bg-red-300 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
-                        >
-                          <RiDeleteBin6Line />
-                        </button>
-                        
-                        <RemoveTransactionModel
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onConfirmDelete={handleConfirmDelete}
-        transactionId={transactionIdToDelete}
-      />
-                      </td>
+                          <button
+                            type="button"
+                            id="deleteProductButton"
+                            onClick={() => openModal(transaction.id)}
+                            data-drawer-target="drawer-delete-product-default"
+                            data-drawer-show="drawer-delete-product-default"
+                            aria-controls="drawer-delete-product-default"
+                            data-drawer-placement="right"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-500 rounded-lg hover:bg-red-300 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
+                          >
+                            <RiDeleteBin6Line />
+                          </button>
+                          <RemoveTransactionModel
+                            isOpen={isModalOpen}
+                            onClose={closeModal}
+                            onConfirmDelete={handleConfirmDelete}
+                            transactionId={transactionIdToDelete}
+                          />
+                        </>
+                      )}
+                    </td>
                     </tr>
                     
                   ))}

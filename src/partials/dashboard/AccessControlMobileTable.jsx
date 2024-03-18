@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { PiUsersFourDuotone } from "react-icons/pi";
 import { IoIosPhonePortrait } from "react-icons/io";
 import { GrSystem } from "react-icons/gr";
-
+import { assignPermission } from "../../redux/actions/accessModules/addPermissions.action";
 const AccessControlMobileTable = () => {
   const userId = useParams();
   const navigate = useNavigate();
@@ -16,6 +16,9 @@ const AccessControlMobileTable = () => {
   const { user, loading } = useSelector((state) => state.fetchSingleUser);
   const { modules } = useSelector((state) => state.fetchAllModules);
   const [retrievedModules, setRetrievedModules] = useState();
+  const [permissions, setPermissions] =useState({})
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState({});
 
   useEffect(() => {
     dispatch(getSingleUserById(userId.userId));
@@ -39,11 +42,40 @@ const AccessControlMobileTable = () => {
     }
   }, [user]);
 
+  const handleSelectAllChange = (e) => {
+    const checked = e.target.checked;
+    setSelectAll(checked);
+    const updatedPermissions = {};
+
+    modules
+      ?.filter((module) => module.platform === "mobile" && module.module_name)
+      .forEach((module) => {
+        updatedPermissions[module.id] = {
+          view: checked ? 1 : 0,
+          add: checked ? 1 : 0,
+          delete: checked ? 1 : 0,
+          edit: checked ? 1 : 0,
+        };
+      });
+
+    setSelectedPermissions(updatedPermissions);
+  };
+
+  const handleSavePermissions = () => {
+    const permissionsData = {
+      userid: parseInt(userId.userId),
+      ...selectedPermissions,
+      platform: "mobile", // Replace with the actual platform value
+    };
+
+    dispatch(assignPermission(permissionsData));
+  };
+
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 mb-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
         <p className="mb-6 ml-20">
-          Mobile access control for <b>{fetchedUser?.Name}</b>
+          Mobile access control for <b>{fetchedUser?.Name_Full}</b>
         </p>
         <div className="   items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center ml-20 mb-4 sm:mb-0 gap-24">
@@ -106,12 +138,11 @@ const AccessControlMobileTable = () => {
                       >
                         <td className="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
                           <div className="flex items-center">
-                            <input
-                              id="checkbox-all"
-                              aria-describedby="checkbox-1"
-                              type="checkbox"
-                              className="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                            />
+                          <input
+        type="checkbox"
+        checked={selectAll}
+        onChange={handleSelectAllChange}
+      />
                             <label htmlFor="checkbox-all" className="sr-only">
                               checkbox
                             </label>
@@ -125,7 +156,7 @@ const AccessControlMobileTable = () => {
                 </tbody>
                 <button
                   className="bg-green-400 mt-4   w-48 h-10 flex items-center justify-center rounded-lg"
-                
+                  onClick={handleSavePermissions}
                 >
                   Save Access Control
                 </button>

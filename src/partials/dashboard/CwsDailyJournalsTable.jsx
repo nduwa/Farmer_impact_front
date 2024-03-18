@@ -12,6 +12,8 @@ import { fetchAllTransactions } from "../../redux/actions/transactions/allTransa
 import { MdAdd } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { fetchAllStation } from "../../redux/actions/station/allStations.action";
+import BucketingModel from "../../components/BucketingModel";
+import BucketingDryingModel from "../../components/BucketingDryingModel";
 
 const CwsDailyJournalsTable = () => {
   const navigate = useNavigate();
@@ -27,6 +29,10 @@ const CwsDailyJournalsTable = () => {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const token = localStorage.getItem("token");
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [showTransactionModel, setShowTransactionModel] = useState(false);
+const [selectedUser, setSelectedUser] = useState(null);
+
+
 
   useEffect(() => {
     dispatch(fetchAllTransactions(token));
@@ -263,6 +269,17 @@ const CwsDailyJournalsTable = () => {
     return totalValues;
   };
   const totalValues = calculateTotalValues();
+  const handleClickAction = (transaction) => {
+    setSelectedUser(transaction);
+    console.log("scbhfrv",selectedUser)
+    setShowTransactionModel(true);
+  };
+  const handleTransactionUpdate = (userId, newPassword) => {
+   
+    setSelectedUser(null);
+    setShowTransactionModel(true);
+  };
+
 
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
@@ -538,7 +555,7 @@ const CwsDailyJournalsTable = () => {
                           href={`/user-transactions/cherry_lot_details/${journal.cherry_lot_id}`}
                           className="text-blue-500 hover:text-gray-500"
                         >
-                          #{journal.site_day_lot}
+                          #{journal.cherry_lot_id}
                         </a>
                       </td>
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -562,14 +579,44 @@ const CwsDailyJournalsTable = () => {
                         {journal.certified === 1 ? "" : journal.unitprice}
                       </td>
                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />{" "}
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" 
+                            onClick={() => handleClickAction(journal)}
+                        
+                        />{" "}
                       </td>
-                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      {showTransactionModel && selectedUser && (
+                            <BucketingModel
+                              transaction={selectedUser}
+                              onClose={() => setShowTransactionModel(false)}
+                              onSubmit={handleTransactionUpdate}
+                            />
+                          )}
+                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" 
+                            onClick={() => handleClickAction(journal)}
+                        
+                        />{" "}
                       </td>
-                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      {showTransactionModel && selectedUser && (
+                            <BucketingModel
+                              transaction={selectedUser}
+                              onClose={() => setShowTransactionModel(false)}
+                              onSubmit={handleTransactionUpdate}
+                            />
+                          )}
+                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" 
+                            onClick={() => handleClickAction(journal)}
+                        
+                        />{" "}
                       </td>
+                      {showTransactionModel && selectedUser && (
+                            <BucketingModel
+                              transaction={selectedUser}
+                              onClose={() => setShowTransactionModel(false)}
+                              onSubmit={handleTransactionUpdate}
+                            />
+                          )}
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
                       </td>

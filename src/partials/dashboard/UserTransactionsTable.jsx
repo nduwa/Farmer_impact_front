@@ -434,16 +434,16 @@ if(loading)
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                       {transaction.approved === 1 ? (
-  <button className="bg-green-500 text-white w-24 h-8 rounded-md">Approved</button>
-) : (
-  <button
-    className="bg-orange-300 text-white w-24 h-8 rounded-md"
-    onClick={() => handleApprove(transaction.site_day_lot)}
-  >
-    Pending...
-  </button>
-)}
-                      </td>
+                                <button className="bg-green-500 text-white w-24 h-8 rounded-md">Approved</button>
+                              ) : (
+                                <button
+                                  className="bg-orange-300 text-white w-24 h-8 rounded-md"
+                                  onClick={() => navigate(`/user_transactions/staff_lot_details/${transaction.site_day_lot}`)}
+                                >
+                                  Pending...
+                                </button>
+                              )}
+                                                    </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {transaction.parchment_lot_id}
                       </td>
@@ -457,7 +457,7 @@ if(loading)
       </div>
 
       <div className="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700">
-        <div className="flex items-center mb-4 sm:mb-0">
+      <div className="flex items-center mb-4 sm:mb-0">
           <a
             href="#"
             className="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
