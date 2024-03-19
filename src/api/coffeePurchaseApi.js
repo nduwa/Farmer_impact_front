@@ -100,6 +100,9 @@ export const updateTransactionById = (token, id, data) => {
   });
 };
 
+
+
+
 export const approveJournal = (token, id) => {
   return new Promise((resolve, reject) => {
     axios
@@ -159,6 +162,73 @@ export const allJournalsByCherryLotId = (token, cherryLotId) => {
       .then((response) => resolve(response.data))
       .catch((error) => {
         if (error.response.data !== undefined) {
+          reject(error.response.data);
+        }
+        reject(error);
+      });
+  });
+};
+
+
+//all buckets
+
+export const allBuckets = async () => {
+  try {
+    const response = await axios.get(`${url}/lots/buckets`, {});
+    return response.data;
+  } catch (error) {
+    if (error.response.data !== undefined) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+export const dryWeighting = async () => {
+  try {
+    const response = await axios.get(`${url}/coffeePurchase/dryweighting`, {});
+    return response.data;
+  } catch (error) {
+    if (error.response.data !== undefined) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+
+
+export const transactionBucket = (token,data) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        `${url}/coffeePurchase/dailyJournal/journalBucket`,
+        data,
+        {
+          headers: { auth_token: ` ${token}` },
+        }
+      )
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        if (error.response?.data !== undefined) {
+          reject(error.response.data);
+        }
+        reject(error);
+      });
+  });
+};
+
+
+export const bucketWeighting = (data) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        `${url}/coffeePurchase/bucketWeight`,
+        data
+      )
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        if (error.response?.data !== undefined) {
           reject(error.response.data);
         }
         reject(error);

@@ -251,11 +251,13 @@ const TransactionDetailsTable = () => {
       totalUnTraceableKg: 0,
       totalKgs: 0,
       siteCollector: "",
+      approved:""
     };
 
    
     journals.forEach((transaction) => {
       totalValues.transactionDate = transaction.transaction_date;
+      totalValues.approved = transaction.approved
 
       totalValues.uploadedTime = transaction.uploaded_at;
 
@@ -683,7 +685,7 @@ console.log("formaaa",formattedTransportFeesCherry)
                       </td>
                    
                       <td className="p-4 space-x-2 whitespace-nowrap">
-                      {transaction.approved === 1 && ( // Show buttons only for pending transactions
+                      {transaction.approved === 0 && (
                         <>
                           <button
                             type="button"
@@ -843,6 +845,7 @@ console.log("formaaa",formattedTransportFeesCherry)
                   <button
                     className="bg-green-500 text-white p-2 m-2"
                     onClick={handleApprove}
+                    disabled={totalValues.approved}
                   >Approve Transaction</button>
                 </div>
                 )}
@@ -988,6 +991,7 @@ console.log("formaaa",formattedTransportFeesCherry)
                     <button
                       className="bg-green-500 text-white p-2 m-2"
                       onClick={handleCommissionFeesSubmit}
+                      disabled={totalValues.approved}
                     >Save Data</button>
                   </div>
                   </>

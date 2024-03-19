@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AiTwotoneCloseCircle } from "react-icons/ai";
-import { updateTransaction } from "../redux/actions/transactions/updateTransaction.action";
+import { addTransactionBucket } from "../redux/actions/transactions/transactionBucket.action";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
@@ -12,7 +12,8 @@ import { useParams } from "react-router-dom";
 const token = localStorage.getItem("token")
 
 export default function BucketingModel({
-  transaction,
+  journal,
+ 
   onClose,
   onSubmit,
 })
@@ -20,48 +21,38 @@ export default function BucketingModel({
 
   const dispatch = useDispatch();
   const journalId = useParams();
-  // const [editedTransaction, setEditedTransaction] = useState({
-  //   lotnumber: transaction.lotnumber,
-  //   paper_receipt: transaction.paper_receipt,
-  //   transaction_date: transaction.transaction_date,
-  //   certifiedKG: transaction.certified === 1 ? transaction.kilograms : 0,
-  //   uncertifiedKG: transaction.certified === 1 ? 0 : transaction.kilograms,
-  //   unitprice: transaction.unitprice,
-  //   bad_kilograms: transaction.bad_kilograms,
-  //   bad_unit_price: transaction.bad_unit_price,
-  //   kilograms:transaction.kilograms,
-  //   certificationType:
-  //     transaction.certification === "CP"
-  //       ? "Cafe Practice"
-  //       : transaction.certification === "RN"
-  //         ? "Rain Forest"
-  //         : transaction.certification === "NC"
-  //           ? "Non Certified"
-  //           : "",
-  // });
+  const [editedJournal, setEditedJournal] = useState({
+   bucket_a:'',
+    bucket_b: "",
+    bucket_c: "",
+    day_lot: journal.cherry_lot_id,
+    certified:journal.certified,
 
+  });
+console.log("journall",editedJournal)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditedTransaction((prevTransaction) => ({
-      ...prevTransaction,
+    setEditedJournal((prevJournal) => ({
+      ...prevJournal,
       [name]: value,
     }));
   };
 
 
- 
+  // console.log("journal",journal)
+
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-       dispatch(updateTransaction(token, transaction.id, editedTransaction));
+       dispatch(addTransactionBucket(token,editedJournal));
       toast.success("Transaction updated successfully");
       onClose();
-      onSubmit(editedTransaction);
+      onSubmit(editedJournal);
   
       // Fetch transactions after successful update
-      dispatch(fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", "")));
+      // dispatch(fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", "")));
   
     } catch (error) {
       console.error("Update failed:", error);
@@ -73,24 +64,7 @@ export default function BucketingModel({
 
 
 
-  const calculateTotalPrice = () => {
-    let totalPriceByTransaction;
-
-
-    // const transactionId = transaction.id;
-    const totalPrice = transaction.kilograms*transaction.unitprice + transaction.bad_kilograms*transaction.bad_unit_price || 0;
-
-    if (!totalPriceByTransaction) {
-      totalPriceByTransaction = 0;
-    }
-
-    totalPriceByTransaction= totalPrice;
-
-
-    return totalPriceByTransaction;
-  };
-
-  const totalPriceByTransaction = calculateTotalPrice();
+ 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-5 overflow-y-auto flex items-center justify-center z-50">
@@ -111,8 +85,11 @@ export default function BucketingModel({
           <input
             className="rounded-lg   w-80"
             type="text"
-            // value={editedTransaction.lotnumber}
-            readOnly
+            value={editedJournal.bucket_a}
+            onChange={handleInputChange}
+            name="bucket_a"
+
+           
           />
 
           <p>BUCKET B</p>
@@ -120,8 +97,11 @@ export default function BucketingModel({
           <input
             className="rounded-lg   w-80"
             type="text"
-            // value={editedTransaction.paper_receipt}
-            readOnly
+            value={editedJournal.bucket_b}
+            onChange={handleInputChange}
+            name="bucket_b"
+
+            
           />
 
           <p>BUCKET C</p>
@@ -129,8 +109,9 @@ export default function BucketingModel({
           <input
             className="rounded-lg   w-80"
             type="text"
-            // value={editedTransaction.transaction_date}
-            // onChange={handleInputChange}
+            value={editedJournal.bucket_c}
+            onChange={handleInputChange}
+            name="bucket_c"
           />
 
 
@@ -145,7 +126,7 @@ export default function BucketingModel({
           {/* Button to submit password */}
           <button
             className="bg-green-400 w-48 h-10  flex items-center justify-center rounded-lg"
-            // onClick={handleEditSubmit}
+            onClick={handleEditSubmit}
           >
             Save Bucket
           </button>

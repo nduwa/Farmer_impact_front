@@ -19,6 +19,10 @@ import allStationSlice from "./slices/station/allStationsSlice";
 import journalsByCherryLotSlice from "./slices/transactions/journalsByCherryLotSlice";
 import addPermissionsSlice from "./slices/accessModules/addPermissionsSlice";
 import transactionByCherryLotSlice from "./slices/transactions/transactionByCherryLotSlice";
+import transactionBucketSlice from "./slices/transactions/transactionBucketSlice";
+import allBucketsSlice from "./slices/transactions/allBucketsSlice";
+import bucketWeightingSlice from "./slices/transactions/bucketWeightingSlice";
+import dryWeightingSlice from "./slices/transactions/dryWeightingSlice";
 const store = configureStore({
   reducer: {
     login,
@@ -41,7 +45,10 @@ const store = configureStore({
     fetchAllJournalsByCherryLotId: journalsByCherryLotSlice,
     addPermissions:addPermissionsSlice,
     fetchAllTransactionsByCherryLot: transactionByCherryLotSlice,
-
+    transactionBucket:transactionBucketSlice,
+    allBuckets:allBucketsSlice,
+    bucketWeighting:bucketWeightingSlice,
+    dryWeighting:dryWeightingSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

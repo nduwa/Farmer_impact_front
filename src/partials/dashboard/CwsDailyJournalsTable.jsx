@@ -14,6 +14,8 @@ import { FaPeopleGroup } from "react-icons/fa6";
 import { fetchAllStation } from "../../redux/actions/station/allStations.action";
 import BucketingModel from "../../components/BucketingModel";
 import BucketingDryingModel from "../../components/BucketingDryingModel";
+import { fetchAllBuckets } from "../../redux/actions/transactions/allBuckets.action";
+import { fetchAllDryWeighting } from "../../redux/actions/transactions/dryWeighting.action";
 
 const CwsDailyJournalsTable = () => {
   const navigate = useNavigate();
@@ -26,13 +28,19 @@ const CwsDailyJournalsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState();
   const { stations } = useSelector((state) => state.fetchAllStations);
+  const { buckets } = useSelector((state) => state.allBuckets);
   const [selectedStatus, setSelectedStatus] = useState("all");
   const token = localStorage.getItem("token");
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [showTransactionModel, setShowTransactionModel] = useState(false);
-const [selectedUser, setSelectedUser] = useState(null);
+  const [showDryingModel, setShowDryingModel] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [allBuckets, setAllBuckets] = useState([]);
+  const [selectedJournal, setSelectedJournal] = useState(null);
+  const { weight } = useSelector((state) => state.dryWeighting);
+  const [allDryWeight, setAllDryWeight] = useState([]);
 
-
+  console.log("selee", selectedJournal);
 
   useEffect(() => {
     dispatch(fetchAllTransactions(token));
@@ -54,6 +62,28 @@ const [selectedUser, setSelectedUser] = useState(null);
       setAllStation(stations.data);
     }
   }, [stations]);
+
+  useEffect(() => {
+    dispatch(fetchAllBuckets());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (buckets) {
+      setAllBuckets(buckets.data);
+    }
+  }, [buckets]);
+  console.log("bucccc", allBuckets);
+
+  useEffect(() => {
+    dispatch(fetchAllDryWeighting());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (weight) {
+      setAllDryWeight(weight.data);
+    }
+  }, [weight]);
+  console.log("bucccc", allDryWeight);
 
   if (loading) {
     return <p className=" text-center">..Loading..</p>;
@@ -211,15 +241,22 @@ const [selectedUser, setSelectedUser] = useState(null);
   const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   };
-  const getJournalsByDate = (cherrylotud) => {
+  const bucketByCherryLot = (cherrylotid) => {
     // Filter transactions based on the provided date
-    const journals = allTransactions.filter(
-      (transaction) => transaction.cherry_lot_id === cherrylotud
+    const buckets = allBuckets.filter(
+      (bucket) => bucket.day_lot_number === cherrylotid
     );
-    return journals;
+    return buckets;
+  };
+  const dryWeightByCherryLot = (cherrylotid) => {
+    // Filter transactions based on the provided date
+    const weights = allDryWeight.filter(
+      (dryweight) => dryweight.day_lot_number === cherrylotid
+    );
+    return weights;
   };
 
-  const journals = getJournalsByDate("23SR054CH0704C");
+  const journals = dryWeightByCherryLot("23SR054CH0604C");
   console.log("by cherrrrryyyyy", journals);
   const isUniquePaperSlip = (paperReceipt) => {
     const occurrences = allPaperReceipts.filter(
@@ -269,17 +306,23 @@ const [selectedUser, setSelectedUser] = useState(null);
     return totalValues;
   };
   const totalValues = calculateTotalValues();
-  const handleClickAction = (transaction) => {
-    setSelectedUser(transaction);
-    console.log("scbhfrv",selectedUser)
+  const handleClickAction = (journal) => {
+    setSelectedUser(journal);
+    console.log("gftftyfytfyufyufyufyfy", selectedUser);
     setShowTransactionModel(true);
   };
-  const handleTransactionUpdate = (userId, newPassword) => {
-   
+  const handleAddBucket = () => {
     setSelectedUser(null);
     setShowTransactionModel(true);
   };
 
+  const handleJournalClickAction = (journal) => {
+    if (buckets) {
+      setSelectedJournal(journal);
+      console.log("gftftyfytfyufyufyufyfy", selectedJournal);
+      setShowDryingModel(true);
+    }
+  };
 
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
@@ -288,7 +331,6 @@ const [selectedUser, setSelectedUser] = useState(null);
           <div className="flex items-center mb-4 sm:mb-0">
             <div className="flex items-center sm:justify-end">
               <div className="flex pl-2 space-x-1 mt-1">
-                {/* <p>Records</p> */}
                 <div>
                   <span>Record</span>
                   <select
@@ -303,7 +345,6 @@ const [selectedUser, setSelectedUser] = useState(null);
                   </select>
                 </div>
 
-                {/* <p>Status</p> */}
                 <div>
                   <span>Status</span>
                   <select
@@ -433,11 +474,7 @@ const [selectedUser, setSelectedUser] = useState(null);
                   </tr>
 
                   <tr>
-                    {/* <th scope="col"
                    
-                     className="p-4">
-                     
-                    </th> */}
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -572,64 +609,141 @@ const [selectedUser, setSelectedUser] = useState(null);
                         {journal.certified === 1
                           ? ""
                           : sumByJournal[
-                              journal.transaction_date?.toLocaleString()
-                            ]}
+                              journal.transaction_date
+                            ]?.toLocaleString()}
                       </td>
                       <td className="p-4 space-x-2 whitespace-nowrap">
                         {journal.certified === 1 ? "" : journal.unitprice}
                       </td>
                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" 
+                        {bucketByCherryLot(journal.cherry_lot_id).length !==
+                        0 ? (
+                          bucketByCherryLot(journal.cherry_lot_id)[0]?.bucketA
+                        ) : (
+                          <MdAdd
+                            className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
                             onClick={() => handleClickAction(journal)}
-                        
-                        />{" "}
+                          />
+                        )}
                       </td>
                       {showTransactionModel && selectedUser && (
-                            <BucketingModel
-                              transaction={selectedUser}
-                              onClose={() => setShowTransactionModel(false)}
-                              onSubmit={handleTransactionUpdate}
-                            />
-                          )}
-                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" 
+                        <BucketingModel
+                          journal={selectedUser}
+                          onClose={() => setShowTransactionModel(false)}
+                          onSubmit={handleAddBucket}
+                        />
+                      )}
+                      <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                        {bucketByCherryLot(journal.cherry_lot_id).length !==
+                        0 ? (
+                          bucketByCherryLot(journal.cherry_lot_id)[0]?.bucketB
+                        ) : (
+                          <MdAdd
+                            className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
                             onClick={() => handleClickAction(journal)}
-                        
-                        />{" "}
+                          />
+                        )}
                       </td>
                       {showTransactionModel && selectedUser && (
-                            <BucketingModel
-                              transaction={selectedUser}
-                              onClose={() => setShowTransactionModel(false)}
-                              onSubmit={handleTransactionUpdate}
-                            />
-                          )}
-                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" 
+                        <BucketingModel
+                          journal={selectedUser}
+                          onClose={() => setShowTransactionModel(false)}
+                          onSubmit={handleAddBucket}
+                        />
+                      )}
+                      <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                        {bucketByCherryLot(journal.cherry_lot_id).length !==
+                        0 ? (
+                          bucketByCherryLot(journal.cherry_lot_id)[0]?.bucketC
+                        ) : (
+                          <MdAdd
+                            className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
                             onClick={() => handleClickAction(journal)}
-                        
-                        />{" "}
+                          />
+                        )}
                       </td>
                       {showTransactionModel && selectedUser && (
-                            <BucketingModel
-                              transaction={selectedUser}
-                              onClose={() => setShowTransactionModel(false)}
-                              onSubmit={handleTransactionUpdate}
-                            />
-                          )}
+                        <BucketingModel
+                          journal={selectedUser}
+                          onClose={() => setShowTransactionModel(false)}
+                          onSubmit={handleAddBucket}
+                        />
+                      )}
                       <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                        {dryWeightByCherryLot(journal.cherry_lot_id).length !==
+                        0 ? (
+                          Math.round(
+                            dryWeightByCherryLot(journal.cherry_lot_id)[0]
+                              .FinalGradeA
+                          )
+                        ) : (
+                          <MdAdd
+                            className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
+                            onClick={() => handleJournalClickAction(journal)}
+                          />
+                        )}
                       </td>
-                      <td className="p-4 space-x-2 whitespace-nowrap">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      {showDryingModel && selectedJournal && (
+                        <BucketingDryingModel
+                          journal={selectedJournal}
+                          onClose={() => setShowDryingModel(false)}
+                          onSubmit={handleAddBucket}
+                        />
+                      )}
+
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {dryWeightByCherryLot(journal.cherry_lot_id).length !==
+                        0 ? (
+                          Math.round(
+                            dryWeightByCherryLot(journal.cherry_lot_id)[0]
+                              .FinalGradeB
+                          )
+                        ) : (
+                          <MdAdd
+                            className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
+                            onClick={() => handleJournalClickAction(journal)}
+                          />
+                        )}
                       </td>
-                      <td className="p-4 space-x-2 whitespace-nowrap">
-                        <MdAdd className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                      {showDryingModel && selectedJournal && (
+                        <BucketingDryingModel
+                          journal={selectedJournal}
+                          onClose={() => setShowDryingModel(false)}
+                          onSubmit={handleAddBucket}
+                        />
+                      )}
+
+                      <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {dryWeightByCherryLot(journal.cherry_lot_id).length !==
+                        0 ? (
+                          Math.round(
+                            dryWeightByCherryLot(journal.cherry_lot_id)[0]
+                              .FinalGradeC
+                          )
+                        ) : (
+                          <MdAdd
+                            className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
+                            onClick={() => handleJournalClickAction(journal)}
+                          />
+                        )}
                       </td>
+                      {showDryingModel && selectedJournal && (
+                        <BucketingDryingModel
+                          journal={selectedJournal}
+                          onClose={() => setShowDryingModel(false)}
+                          onSubmit={handleAddBucket}
+                        />
+                      )}
+
                       <td className="p-4 space-x-2 whitespace-nowrap">
-                        <FaPeopleGroup 
-                        onClick={()=> navigate(`/user-transactions/lots_in_a_day_lot/${journal.cherry_lot_id}`)}
-                        className="text-white rounded-full bg-green-500 w-[50%] h-[50%]" />
+                        <FaPeopleGroup
+                          onClick={() =>
+                            navigate(
+                              `/user-transactions/lots_in_a_day_lot/${journal.cherry_lot_id}`
+                            )
+                          }
+                          className="text-white rounded-full bg-green-500 w-[50%] h-[50%]"
+                        />
                       </td>
                     </tr>
                   ))}
