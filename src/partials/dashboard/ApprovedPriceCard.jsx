@@ -36,42 +36,7 @@ function ApprovedPriceCard() {
             </li>
           </EditMenu>
         </header>
-        {/* <div className='flex flex-row text-xs font-semibold gap-3 mb-3  '>
-        <div className='flex flex-col gap-5'>
-         <h2>TOTAL CHERRY PURCHASES (KG)</h2>
-         <ul className='flex flex-col gap-5'>
-          <li>
-            <a href="">Certified</a>
-          </li>
-          <li>
-            <a href="">Certified</a>
-          </li>
-          <li>
-            <a href="">Certified</a>
-          </li>
-          <li>
-            <a href="">Certified</a>
-          </li>
-         </ul>
-         </div>
-        <div>
-          <h2> 15,017,194 KG </h2>
-          <ul>
-            <li>
-            9,934,926
-            </li>
-            <li>
-            9,934,926
-            </li>
-            <li>
-            9,934,926
-            </li>
-            <li>
-            9,934,926
-            </li>
-          </ul>
-          </div>
-        </div> */}
+        
         <div>
           <div className='flex flex-row justify-between text-[12px] mb-4'>
             <label className=''>LATEST AVG APPROVED PRICE @ CWS</label>

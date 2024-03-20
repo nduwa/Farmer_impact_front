@@ -14,20 +14,22 @@ import { fetchAllTransactions } from "../../redux/actions/transactions/allTransa
 import { CommisionFees } from "../../redux/actions/transactions/addCommissinFees";
 import { addCommission } from "../../redux/actions/transactions/commission.action";
 import "react-toastify/dist/ReactToastify.css";
-import { approveJoulnal } from "../../redux/actions/transactions/approveJournal.action";
-
-const TransactionDetailsTable = () => {
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { fetchAllTransactionsByCherryLot } from "../../redux/actions/transactions/transactionsByCherryLot.action ";
+const LotsInAdaylotTable= () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
 
   const itemsPerPage = 20;
   const journalId = useParams();
+  const cherryLotId= useParams();
 
 
   const [journals, setJournals] = useState([]);
 
-  const { journal } = useSelector((state) => state.fetchAllTransactionsByJournal);
+  const { journal } = useSelector((state) => state.fetchAllTransactionsByCherryLot);
   const { removeTransactionData } = useSelector((state) => state.fetchAllStaff);
   const [isCommissionFeesAdded, setIsCommissionFeesAdded] = useState(false)
   const [isCommissionPriceAdded, setIsCommissionPriceAdded] = useState(false)
@@ -83,48 +85,48 @@ const TransactionDetailsTable = () => {
   
 //single journal
     const filteredJournal = 
-      getUniqueValues(allTransactions,journalId.journalId);
+      getUniqueValues(allTransactions,cherryLotId.cherryLotId);
      
   
   const formatter = new Intl.NumberFormat('en-US');
 
 //removing transaction
-  const openModal = (transactionId) => {
-    setTransactionIdToDelete(transactionId)
+  // const openModal = (transactionId) => {
+  //   setTransactionIdToDelete(transactionId)
    
-    setModalOpen(true);
-  };
-  const closeModal = () => {
-    setTransactionIdToDelete(null)
-    setModalOpen(false);
-  };
+  //   setModalOpen(true);
+  // };
+  // const closeModal = () => {
+  //   setTransactionIdToDelete(null)
+  //   setModalOpen(false);
+  // };
   
-  const handleConfirmDelete = (transactionId) => {
+  // const handleConfirmDelete = (transactionId) => {
     
-    if (transactionIdToDelete) {
-      dispatch(removeTransaction(token, transactionIdToDelete));
-    }
+  //   if (transactionIdToDelete) {
+  //     dispatch(removeTransaction(token, transactionIdToDelete));
+  //   }
   
-    if(removeTransactionData){
+  //   if(removeTransactionData){
       
-    }
+  //   }
   
-    console.log(`Deleting transaction with ID: ${transactionId}`);
-    closeModal(); etion
-  };
-  useEffect(() => {
+  //   console.log(`Deleting transaction with ID: ${transactionId}`);
+  //   closeModal(); etion
+  // };
+  // useEffect(() => {
     
-    if (removeTransactionData) {
-      dispatch(
-        fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", ""))
-      );
-    }
-  }, [removeTransactionData,dispatch]); 
+  //   if (removeTransactionData) {
+  //     dispatch(
+  //       fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", ""))
+  //     );
+  //   }
+  // }, [removeTransactionData,dispatch]); 
 
  //
   useEffect(() => {
     dispatch(
-      fetchAllTransactionsByJournal(token, journalId.journalId.replace(":", ""))
+      fetchAllTransactionsByCherryLot(token, cherryLotId.cherryLotId.replace(":", ""))
     );
   }, [dispatch,token,journalId]);
 
@@ -227,17 +229,20 @@ const TransactionDetailsTable = () => {
   };
 
   const allPaperReceipts = journals.map(
-    (transaction) => transaction.paper_receipt
+    (transaction) => transaction.username
   );
 
-  const isUniquePaperSlip = (paperReceipt) => {
+  const isUniquePaperSlip = (username) => {
     const occurrences = allPaperReceipts.filter(
-      (value) => value === paperReceipt
+      (value) => value === username
     ).length;
 
 
     return occurrences === 1;
   };
+
+const filteredSiteCollectors = getUniqueValues(allPaperReceipts,"username");
+
 
   const calculateTotalValues = () => {
     const totalValues = {
@@ -251,13 +256,11 @@ const TransactionDetailsTable = () => {
       totalUnTraceableKg: 0,
       totalKgs: 0,
       siteCollector: "",
-      approved:""
     };
 
    
     journals.forEach((transaction) => {
       totalValues.transactionDate = transaction.transaction_date;
-      totalValues.approved = transaction.approved
 
       totalValues.uploadedTime = transaction.uploaded_at;
 
@@ -306,92 +309,137 @@ console.log("formaaa",formattedTransportFeesCherry)
       new Date(dateString)
     );
   };
-  const handleClickAction = (transaction) => {
-    setSelectedUser(transaction);
-    setShowTransactionModel(true);
-  };
+  // const handleClickAction = (transaction) => {
+  //   setSelectedUser(transaction);
+  //   setShowTransactionModel(true);
+  // };
  
-  const handleTransactionUpdate = (userId, newPassword) => {
+  // const handleTransactionUpdate = (userId, newPassword) => {
    
-    setSelectedUser(null);
-    setShowTransactionModel(true);
-  };
+  //   setSelectedUser(null);
+  //   setShowTransactionModel(true);
+  // };
 
-  const handleAdditionalInfoChange = (e) => {
-    const { name, value } = e.target;
-    setAdditionalInfo((prevInfo) => ({
-      ...prevInfo,
-      [name]: value,
-    }));
-  };
+  // const handleAdditionalInfoChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setAdditionalInfo((prevInfo) => ({
+  //     ...prevInfo,
+  //     [name]: value,
+  //   }));
+  // };
 
-  const handleAdditionalInfoSubmit = async (e) => {
-    e.preventDefault();
-    try {
-       dispatch(addCommission(  additionalInfo));
+  // const handleAdditionalInfoSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //      dispatch(addCommission(  additionalInfo));
       
-      console.log("fjvhdfv",additionalInfo)
-      setIsCommissionPriceAdded(true)
-    } catch (error) {
-      console.error("Update failed:", error);
-    }
-  };
+  //     console.log("fjvhdfv",additionalInfo)
+  //     setIsCommissionPriceAdded(true)
+  //   } catch (error) {
+  //     console.error("Update failed:", error);
+  //   }
+  // };
 
 //adding commission fees
-  const handleCommissionFeesSubmit = async (e) => {
-    e.preventDefault();
-    try {
-       dispatch(CommisionFees(token,{
-        commission_fees: totalCommission,
-        floater_transport_fee: transportFeesFloaters,
-        created_at: Date.now(),
-        created_by: decodedToken.user.id,
-        _kf_Supplier: filteredJournal[0]._kf_Supplier,
-        _kf_Station: filteredJournal[0]._kf_Station,
-        day_lot_number: filteredJournal[0].DayLotNumber,
-        UserID: decodedToken.staff.userID,
-        site_cherry_price: filteredJournal[0].unitprice,
-        site_cherry_kgs: totalValues.totalCertified + totalValues.totalUncertified,
-        site_Floater_kgs: totalValues.totalFloaters,
-        site_Floater_price: filteredJournal[0].bad_unit_price,
-        transport_fees: additionalInfo.transportFee,
-        site_total_payment: totals,
-        site_day_lot:filteredJournal[0].site_day_lot,
-        status:0
+  // const handleCommissionFeesSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //      dispatch(CommisionFees(token,{
+  //       commission_fees: totalCommission,
+  //       floater_transport_fee: transportFeesFloaters,
+  //       created_at: Date.now(),
+  //       created_by: decodedToken.user.id,
+  //       _kf_Supplier: filteredJournal[0]._kf_Supplier,
+  //       _kf_Station: filteredJournal[0]._kf_Station,
+  //       day_lot_number: filteredJournal[0].DayLotNumber,
+  //       UserID: decodedToken.staff.userID,
+  //       site_cherry_price: filteredJournal[0].unitprice,
+  //       site_cherry_kgs: totalValues.totalCertified + totalValues.totalUncertified,
+  //       site_Floater_kgs: totalValues.totalFloaters,
+  //       site_Floater_price: filteredJournal[0].bad_unit_price,
+  //       transport_fees: additionalInfo.transportFee,
+  //       site_total_payment: totals,
+  //       site_day_lot:filteredJournal[0].site_day_lot,
+  //       status:0
       
-      }));
-      setIsCommissionFeesAdded(true)
-      setIsApproveButton(true)
+  //     }));
+  //     setIsCommissionFeesAdded(true)
+  //     setIsApproveButton(true)
   
-    } catch (error) {
-      console.error("Update failed:", error);
-    }
-  };
+  //   } catch (error) {
+  //     console.error("Update failed:", error);
+  //   }
+  // };
 
 //approving transaction
-  const handleApprove = () => {
-    dispatch(approveJoulnal(token, journalId.journalId))
-      .then(() => {
-      if(success){
-        navigate('/user-transaction');
-      }
-      })
-      .catch((error) => {
-        console.error('Error approving journal:', error);
-      });
+  // const handleApprove = () => {
+  //   dispatch(approveJoulnal(token, journalId.journalId))
+  //     .then(() => {
+  //     if(success){
+  //       navigate('/user-transaction');
+  //     }
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error approving journal:', error);
+  //     });
       
+  // };
+
+
+  
+
+  const handleDownload = () => {
+    const table = document.querySelector(".table-fixed");
+    const rows = table.querySelectorAll("tr");
+  
+    const data = [];
+    
+    
+    const headers = Array.from(rows[0].querySelectorAll("th")).map(header => header.innerText);
+    data.push(headers.join(","));
+  
+    rows.forEach((row, index) => {
+      if (index !== 0) { 
+        const rowData = [];
+        const cells = row.querySelectorAll("td");
+        cells.forEach((cell) => {
+          rowData.push(cell.innerText);
+        });
+        data.push(rowData.join(","));
+      }
+    });
+  
+    const csvContent = "data:text/csv;charset=utf-8," + data.join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Cherry_Lot_Summary.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+  
 
   return (
     <div className="flex flex-col col-span-full xl:col-span-12">
       <div className="p-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
-        <span className="font-large font-bold ml-12 ">
-          Site collector Daily Journal
-        </span>
+      <span className="font-large font-bold ml-12 ">Cherry lot summary</span>
         <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex w-full items-center mb-4  sm:mb-0 ">
-            <table className="min-w-full  divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
+            <table className="min-w-full  divide-y divide-gray-200  mt-8  dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
               <thead className=" dark:bg-gray-700">
+              <tr className="border-b">
+                  <th
+                    scope="col"
+                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
+                  >
+                    CHERRY DAY LOT	
+                  </th>
+                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
+                    {cherryLotId.cherryLotId.replace(":", "")}
+                  </td>
+                 
+                </tr>
                 <tr className="border-b">
                   <th
                     scope="col"
@@ -402,11 +450,14 @@ console.log("formaaa",formattedTransportFeesCherry)
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
                     {formatDate(totalValues.uploadedTime)}
                   </td>
-                  <th
+                 
+                </tr>
+                <tr className="border-b">
+                <th
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    TRANSACTION DATE
+                    BUY DATE
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                     {totalValues.transactionDate}
@@ -417,19 +468,10 @@ console.log("formaaa",formattedTransportFeesCherry)
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    SITE COLLECTOR NAME
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {journal?.staffData[0].Name}
-                  </td>
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                    SITE COLLECTOR ID
+                   TOTAL KG PURCHASED	
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {journal?.staffData[0].userID}
+                    {totalValues.totalKgs.toLocaleString()}
                   </td>
                 </tr>
                 <tr className="border-b">
@@ -437,19 +479,10 @@ console.log("formaaa",formattedTransportFeesCherry)
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    SC DAILY JOURNAL LOT
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {journalId.journalId.replace(":", "")}
-                  </td>
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                    COFFEE VALUE
+                    TOTAL CONTRIBUTING FARMERS	
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {totalValues.totalCoffeeValue.toLocaleString()}
+                    {journals.length}
                   </td>
                 </tr>
                 <tr className="border-b">
@@ -462,61 +495,43 @@ console.log("formaaa",formattedTransportFeesCherry)
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
                     {totalValues.averagePrice}
                   </td>
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                    CERTIFIED KG
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {totalValues.totalCertified.toLocaleString()}
-                  </td>
+                 
                 </tr>
                 <tr className="border-b">
                   <th
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    UNCERTIFIED KG
+                    NUMBER OF CONTRIBUTING AGENTS	
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {totalValues.totalUncertified}
+                    {filteredSiteCollectors.length} AGENT(S)
                   </td>
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                    UNTRACEABLE KG
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {totalValues.totalUncertified}
-                  </td>
+                
                 </tr>
                 <tr className="border-b">
-                  <th
+                <th
                     scope="col"
                     className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
                   >
-                    FLOATERS KG
-                  </th>
-                  <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white border-r">
-                    {totalValues.totalFloaters}
-                  </td>
-                  <th
-                    scope="col"
-                    className="p-4 text-xs font-bold text-left text-gray-500 uppercase dark:text-gray-400 border-r"
-                  >
-                    TOTAL KG
+                   TOTAL AGENT VOLUME COMMISSION	
                   </th>
                   <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                    {totalValues.totalKgs.toLocaleString()}
+                  {filteredSiteCollectors.length} AGENT(S)
                   </td>
+                
                 </tr>
+                
+                
+                
+               
+                
               </thead>
             </table>
           </div>
         </div>
       </div>
+      <p className="mt-3 font-bold">Farmer Contributions</p>
       <div className="flex flex-col">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
@@ -525,92 +540,66 @@ console.log("formaaa",formattedTransportFeesCherry)
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
                     <th scope="col" className="p-4">
-                      #
+                    CHERRY.LOT.NO	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      FARMER.ID
+                   FARMER	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      FARMER.NAME
+                     CERT.ID	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      PAPER.RECEIPT
+                   DELIVERY.SITE	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      KG.CERT
+                      KG.DELIVERED	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      KG.UNCERT
+                    FARMER.PYT	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      PX.PER.KG
+                      FTR
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      FLOATER.KG
+                    PAPER.RECEIPT	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      FLOATER.PX
+                     PAYMENT TYPE	
                     </th>
                     <th
                       scope="col"
                       className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                     >
-                      TOTAL.KG
+                      EDITED.
+
                     </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      PURCHASE.DATE
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      TOTAL
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      CASH
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      MOBILE
-                    </th>
-                    <th
-                      scope="col"
-                      className="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      ACTION
-                    </th>
+                  
+                   
+                   
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -620,118 +609,44 @@ console.log("formaaa",formattedTransportFeesCherry)
                       className="hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {isUniquePaperSlip(transaction.paper_receipt) ? (
-                          <button className="w-8 h-8 rounded-full bg-green-500 text-white  flex items-center justify-center">
-                            i
-                          </button>
-                        ) : (
-                          <button className="w-8 h-8 rounded-full bg-red-500 text-white  flex items-center justify-center">
-                            i
-                          </button>
-                        )}
+                     {transaction.cherry_lot_id}
                       </td>
 
                       <td className="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        {transaction.farmerid}
+                       [ {transaction.farmerid} , {transaction.farmername}]
                       </td>
                       <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.farmername}
+                        {transaction.farmerid}
                       </td>
 
                       <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400">
+                      [{journal?.staffData[0].Name} , {journal?.staffData[0].userID}]
+
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {
+                          transaction.kilograms + transaction.bad_kilograms
+                          }
+                      </td>
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {transaction.cash_paid.toLocaleString()}
+                      </td>
+                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {transaction.lotnumber}
+                      </td>
+                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
                         {transaction.paper_receipt}
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.certified === 1
-                          ? transaction.kilograms
-                          : 0}
-                      </td>
-                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.certified === 1
-                          ? 0
-                          : transaction.kilograms}
-                      </td>
-                      <td className="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.unitprice}
+                       CASH
                       </td>
                       <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.bad_kilograms}
+                        {transaction.edited === 1 ? "YES" : "NO"}
                       </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.bad_unit_price}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {calculateTotalKilogramsPurchased(
-                          transaction
-                        ).toLocaleString()}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {transaction.transaction_date}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {totalPriceByTransaction[
-                          transaction.id
-                        ]?.toLocaleString()}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {totalPriceByTransaction[
-                          transaction.id
-                        ]?.toLocaleString()}
-                      </td>
-                      <td class="p-4 text-base font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                        {totalMomoAmountByTransaction[
-                          transaction.id
-                        ]?.toLocaleString()}
-                      </td>
-                   
-                      <td className="p-4 space-x-2 whitespace-nowrap">
-                      {transaction.approved === 0 && (
-                        <>
-                          <button
-                            type="button"
-                            id="updateProductButton"
-                            data-drawer-target="drawer-update-product-default"
-                            data-drawer-show="drawer-update-product-default"
-                            aria-controls="drawer-update-product-default"
-                            data-drawer-placement="right"
-                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-500 hover:bg-green-400 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            onClick={() => handleClickAction(transaction)}
-                          >
-                            <MdModeEdit />
-                          </button>
-                          {showTransactionModel && selectedUser && (
-                            <EditTransactionModel
-                              transaction={selectedUser}
-                              onClose={() => setShowTransactionModel(false)}
-                              onSubmit={handleTransactionUpdate}
-                            />
-                          )}
-
-                          <button
-                            type="button"
-                            id="deleteProductButton"
-                            onClick={() => openModal(transaction.id)}
-                            data-drawer-target="drawer-delete-product-default"
-                            data-drawer-show="drawer-delete-product-default"
-                            aria-controls="drawer-delete-product-default"
-                            data-drawer-placement="right"
-                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-500 rounded-lg hover:bg-red-300 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
-                          >
-                            <RiDeleteBin6Line />
-                          </button>
-                          <RemoveTransactionModel
-                            isOpen={isModalOpen}
-                            onClose={closeModal}
-                            onConfirmDelete={handleConfirmDelete}
-                            transactionId={transactionIdToDelete}
-                          />
-                        </>
-                      )}
-                    </td>
                     </tr>
                     
                   ))}
-                  <tr>
+                  {/* <tr>
                   <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
                       TOTALS
                       </td>
@@ -778,7 +693,7 @@ console.log("formaaa",formattedTransportFeesCherry)
                     <td className="p-4 text-base font-bold   whitespace-nowrap dark:text-white">
 
                        </td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </table>
             </div>
@@ -839,18 +754,25 @@ console.log("formaaa",formattedTransportFeesCherry)
             </span>
           </span>
         </div>
-      </div>      {isCommissionFeesAdded &&(
+      </div>  
+      <div className="flex items-center justify-center">
+      <button className="bg-green-500 p-4 mt-5 rounded-lg text-white" onClick={handleDownload}>
+  DOWNLOAD REPORT
+</button>
+
+      </div>
+  
+        {/* {isCommissionFeesAdded &&(
 
                   <div className="flex justify-center items-center">
                   <button
                     className="bg-green-500 text-white p-2 m-2"
                     onClick={handleApprove}
-                    disabled={totalValues.approved}
                   >Approve Transaction</button>
                 </div>
-                )}
-      <p className="mt-3 font-bold">Additional Info</p>
-      <div className="items-center  bg-white justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
+                )} */}
+      {/* <p className="mt-3 font-bold">Additional Info</p> */}
+      {/* <div className="items-center  bg-white justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex w-full gap-5 mb-4  sm:mb-0 ">
           <table className="min-w-[70%] divide-y divide-gray-200  mt-8 table-fixed dark:divide-gray-600 border border-gray-300 dark:border-gray-600">
               <thead className=" dark:bg-gray-700">
@@ -991,7 +913,6 @@ console.log("formaaa",formattedTransportFeesCherry)
                     <button
                       className="bg-green-500 text-white p-2 m-2"
                       onClick={handleCommissionFeesSubmit}
-                      disabled={totalValues.approved}
                     >Save Data</button>
                   </div>
                   </>
@@ -1012,7 +933,7 @@ console.log("formaaa",formattedTransportFeesCherry)
           </div>
           </div>
         
-        </div>
+        </div> */}
 
       {/* update drawer */}
       <UpdateItemDrawer />
@@ -1026,4 +947,4 @@ console.log("formaaa",formattedTransportFeesCherry)
   );
 };
 
-export default TransactionDetailsTable;
+export default LotsInAdaylotTable;
