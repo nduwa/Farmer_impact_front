@@ -83,24 +83,28 @@ export default function BucketingDryingModel({ journal, onClose, onSubmit }) {
           />
           <br />
 
-          <input
-            type="radio"
-            id="grade_a_weight_taken_before"
-            name="taken_a"
-            value="before" 
-            onChange={handleInputChange}
-          />
-          <label htmlFor="grade_a_weight_taken_before" className="mr-4">
-            Before Drying{" "}
-          </label>
-          <input
-            type="radio"
-            id="grade_a_weight_taken_after"
-            name="taken_a"
-            value="after" 
-            onChange={handleInputChange}
-          />
-          <label htmlFor="grade_a_weight_taken_after">After Drying</label>
+          <label htmlFor="grade_a_weight_taken">Grade A Weight Taken</label>
+
+          <div className="flex items-center">
+            <input
+              type="radio"
+              id="grade_a_weight_taken_before"
+              name="taken_a"
+              value="before"
+              onChange={handleInputChange}
+            />
+            <label htmlFor="grade_a_weight_taken_before" className="mr-4">
+              Before Drying{" "}
+            </label>
+            <input
+              type="radio"
+              id="grade_a_weight_taken_after"
+              name="taken_a"
+              value="after"
+              onChange={handleInputChange}
+            />
+            <label htmlFor="grade_a_weight_taken_after">After Drying</label>
+          </div>
 
           <br />
 

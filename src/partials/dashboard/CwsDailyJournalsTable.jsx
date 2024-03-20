@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import UpdateItemDrawer from "./UpdateItemDrawer";
 import DeleteItemDrawer from "./DeleteItemDrawer";
 import AddItemDrawer from "./AddItemDrawer";
-import DashboardCard02 from "./DashboardCard02";
-import DashboardCard03 from "./DashboardCard03";
+import CherryPurchasedCard from "./CherryPurchasedCard";
+import DashboardCard03 from "./ProjectedParchmentCard";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
@@ -16,7 +16,7 @@ import BucketingModel from "../../components/BucketingModel";
 import BucketingDryingModel from "../../components/BucketingDryingModel";
 import { fetchAllBuckets } from "../../redux/actions/transactions/allBuckets.action";
 import { fetchAllDryWeighting } from "../../redux/actions/transactions/dryWeighting.action";
-
+import FarmerPriceCard from "./FarmerPriceCard";
 const CwsDailyJournalsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -278,10 +278,12 @@ const CwsDailyJournalsTable = () => {
       totalUnTraceableKg: 0,
       totalKgs: 0,
       siteCollector: "",
+      badUnitPrice:''
     };
 
     allTransactions.forEach((transaction) => {
       totalValues.transactionDate = transaction.transaction_date;
+      totalValues.badUnitPrice=transaction.bad_unit_price
 
       totalValues.uploadedTime = transaction.uploaded_at;
 
@@ -396,7 +398,7 @@ const CwsDailyJournalsTable = () => {
         </div>
       </div>
       <div className="flex flex-row left-4 items-center justify-center py-8 gap-3">
-        <DashboardCard02
+        <CherryPurchasedCard
           cardTitle="TOTAL CHERRY PURCHASES"
           totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
           certified={totalValues.totalCertified.toLocaleString()}
@@ -404,7 +406,7 @@ const CwsDailyJournalsTable = () => {
           uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
           floaters={totalValues.totalFloaters.toLocaleString()}
         />
-        <DashboardCard02
+        <CherryPurchasedCard
           cardTitle="PROJECTED PARCHMENT (KG)"
           totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
           certified={totalValues.totalCertified.toLocaleString()}
@@ -412,21 +414,15 @@ const CwsDailyJournalsTable = () => {
           uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
           floaters={totalValues.totalFloaters.toLocaleString()}
         />
-        <DashboardCard02
-          cardTitle="PREVIOUS APPROVED PRICE"
-          totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
-          certified={totalValues.totalCertified.toLocaleString()}
-          traceableUncertified={totalValues.totalCertified.toLocaleString()}
-          uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
-          floaters={totalValues.totalFloaters.toLocaleString()}
+       <FarmerPriceCard
+          
+          goodCherry={totalValues.averagePrice}
+          floaters={totalValues.badUnitPrice}
         />
-        <DashboardCard02
-          cardTitle="CURRENT PURCHASE PRICE"
-          totalCherryPurchases={totalValues.totalKgs.toLocaleString()}
-          certified={totalValues.totalCertified.toLocaleString()}
-          traceableUncertified={totalValues.totalCertified.toLocaleString()}
-          uncertifiedUntraceable={totalValues.totalUncertified.toLocaleString()}
-          floaters={totalValues.totalFloaters.toLocaleString()}
+        <FarmerPriceCard
+          
+          goodCherry={totalValues.averagePrice}
+          floaters={totalValues.badUnitPrice}
         />
       </div>
       <div className="flex flex-row left-4 items-center justify-center py-8 gap-3"></div>

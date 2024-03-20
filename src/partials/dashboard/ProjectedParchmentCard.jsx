@@ -1,31 +1,22 @@
-
+import React from 'react';
 import { Link } from 'react-router-dom';
 import LineChart from '../../charts/LineChart01';
-import Icon from '../../images/icon-02.svg';
+import Icon from '../../images/icon-03.svg';
 import EditMenu from '../../components/DropdownEditMenu';
+
+// Import utilities
 import { tailwindConfig, hexToRGB } from '../../utils/Utils';
-import React, { useState, useEffect } from "react";
 
-
-import "react-toastify/dist/ReactToastify.css";
-
-
-
-
-function DashboardCard02( { cardTitle,totalCherryPurchases,  certified, traceableUncertified, uncertifiedUntraceable, floaters}) {
-
- 
-
-
+function ProjectedParchmentCard({totalCherryPurchases, certified, traceableUncertified, uncertifiedUntraceable, floaters}) {
 
 
 
   return (
-    <div className="flex flex-col  col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
+    <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
           {/* Icon */}
-          <img src={Icon} width="32" height="32" alt="Icon 02" />
+          <img src={Icon} width="32" height="32" alt="Icon 03" />
           {/* Menu button */}
           <EditMenu align="right" className="relative inline-flex">
             <li>
@@ -47,7 +38,7 @@ function DashboardCard02( { cardTitle,totalCherryPurchases,  certified, traceabl
         </header>
         <div>
           <div className='flex flex-row justify-between text-[12px] mb-4'>
-            <label className=''>{cardTitle} (KG)</label>
+            <label className=''>TOTAL CHERRY PURCHASES (KG)</label>
             <label>1{totalCherryPurchases} KG</label>
           
           </div>
@@ -70,12 +61,11 @@ function DashboardCard02( { cardTitle,totalCherryPurchases,  certified, traceabl
             <label>{floaters} Kg</label>
           </div>
         </div>
-       
       </div>
       {/* Chart built with Chart.js 3 */}
-  
+
     </div>
   );
 }
 
-export default DashboardCard02;
+export default ProjectedParchmentCard;
