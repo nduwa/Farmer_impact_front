@@ -86,14 +86,28 @@ useEffect(() => {
             ? 'Administration Module Access'
             : currentPage === `user-administaration/access-controll/mobile-access/:${userId}`
             ? 'Administration Mobile Access'
-            : currentPage === 'user_transaction/cws-daily-journals'
+            : currentPage === 'user-transactions/cws-daily-journals'
             ? 'CWS Daily Journals'
             : currentPage === `user_transactions/staff_lot_details/:journalId`
             ? 'Coffee Purchases Site collector details'
+            : currentPage === `user_inventory_management/assigned_parchment`
+            ? 'Coffee Inventory Assigned Parchment'
+            : currentPage === `user_inventory_management/assigned_parchment`
+            ? 'Coffee Inventory Assigned Parchment'
+            : currentPage === `user_transaction/add_untraceable_coffee`
+            ? 'Coffee Purchases CWS Daily journal Listing'
+            : currentPage === `user_inventory_management/assigned_parchment`
+            ? 'Coffee Inventory Assigned Parchment'
+            : currentPage === `user_registration/general_harvest`
+            ? 'Buy Coffee General harvest'
+            : currentPage === `user_registration/site_harvest`
+            ? 'Buy Coffee General harvest'
+
 
             : currentPage === 'user-administration'
             ? 'Manage application Users'
             : 'Welcome to Farmer Impact System'}
+            
         </p>
       </div>
     </div>

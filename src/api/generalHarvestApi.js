@@ -1,27 +1,27 @@
 import axios from "axios";
 
 const url = "http://localhost:5000";
-
-export const getAllModules = () => {
+export const getAllGeneralHarvest = (data) => {
+  console.log("data", data);
   return new Promise((resolve, reject) => {
     axios
-      .get(`${url}/accessControl/allAccessControl`)
+      .get(
+        `${url}/harvests/generalHarvest?season=${data.season}&station=${data.station}`
+      )
       .then((response) => resolve(response.data))
       .catch((error) => {
-        if (error.response.data !== undefined) {
+        if (error.response?.data !== undefined) {
           reject(error.response.data);
-          console.log("err", error);
         }
         reject(error);
-        console.log("err", error);
       });
   });
 };
 
-export const addPermissions = (data) => {
+export const getAllSeasons = () => {
   return new Promise((resolve, reject) => {
     axios
-      .post(`${url}/accessControl/assignPermissions`, data)
+      .get(`${url}/harvests/seasons`)
       .then((response) => resolve(response.data))
       .catch((error) => {
         if (error.response?.data !== undefined) {

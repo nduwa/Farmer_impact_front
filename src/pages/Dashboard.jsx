@@ -4,11 +4,12 @@ import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import FilterButton from "../components/DropdownFilter";
 import DashboardCard01 from "../partials/dashboard/DashboardCard01";
-import DashboardCard02 from "../partials/dashboard/DashboardCard02";
-import DashboardCard03 from "../partials/dashboard/DashboardCard03";
+import CherryPurchasedCard from "../partials/dashboard/CherryPurchasedCard";
+import ProjectedParchmentCard from "../partials/dashboard/ProjectedParchmentCard";
 import AvgPriceCard from "../partials/dashboard/AvgPriceCard";
 import ApprovedPriceCard from "../partials/dashboard/ApprovedPriceCard";
 import FarmerPriceCard from "../partials/dashboard/FarmerPriceCard";
+
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -46,12 +47,13 @@ function Dashboard() {
               {/* Line chart (Acme Plus) */}
               <DashboardCard01 />
               {/* Line chart (Acme Advanced) */}
-              <DashboardCard02 />
+              <CherryPurchasedCard />
               {/* Line chart (Acme Professional) */}
-              <DashboardCard03 />
+              <ProjectedParchmentCard />
               <AvgPriceCard />
               <ApprovedPriceCard />
               <FarmerPriceCard />
+           
 
               {/* Doughnut chart (Top Countries) */}
               {/* <DashboardCard06 /> */}
