@@ -381,7 +381,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 activecondition={
                   pathname.includes("user_transactions") ||
                   pathname.includes("user-transactions/cws-daily-journals")||
-                  pathname.includes("user_transaction/add_untraceable_coffee")
+                  pathname.includes("user_transaction/add_untraceable_coffee")||
+                  pathname.includes("user_registration/general_harvest")||
+                  pathname.includes("user_registration/site_harvest")
+                  
                 }
               >
                 {(handleClick, open) => {
@@ -393,6 +396,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                   const isAddUntraceableCoffeeActive = pathname.includes(
                     "user_transaction/add_untraceable_coffee"
                   );
+                  const isGeneralHarvestActive = pathname.includes(
+                    "general_harvest"
+                  );
+                  const isSiteHarvestActive = pathname.includes("site_harvest")
                   return (
                     <React.Fragment>
                       <a
@@ -482,7 +489,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           <li className="mb-3 last:mb-0">
                             <NavLink
                               end
-                              to="/reset-password"
+                              style={
+                                isGeneralHarvestActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
+                              to="/user_registration/general_harvest"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -492,8 +504,13 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           </li>
                           <li className="mb-3 last:mb-0">
                             <NavLink
-                              end
-                              to="/reset-password"
+                              end 
+                              style={
+                                isSiteHarvestActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
+                              to="/user_registration/site_harvest"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -510,8 +527,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
             </ul>
             <ul className="mt-3">
               {/* Authentication */}
-              <SidebarLinkGroup>
+              <SidebarLinkGroup
+                activecondition={
+                  pathname.includes("user_inventory_management") 
+                  
+                }
+              >
                 {(handleClick, open) => {
+                      const isActive = pathname.includes("assigned_parchment");
                   return (
                     <React.Fragment>
                       <a
@@ -551,7 +574,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="/signin"
+                              style={
+                                isActive
+                                  ? { color: "#4F46E5" }
+                                  : {}
+                              }
+                              to="/user_inventory_management/assigned_parchment"
                               className="block text-black hover:text-slate-400 transition duration-150 truncate"
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">

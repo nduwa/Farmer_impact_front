@@ -4,7 +4,7 @@ import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import FilterButton from "../components/DropdownFilter";
 import DashboardCard01 from "../partials/dashboard/DashboardCard01";
-import DashboardCard02 from "../partials/dashboard/DashboardCard02";
+import DashboardCard02 from "../partials/dashboard/CherryPurchasedCard";
 import DashboardCard03 from "../partials/dashboard/DashboardCard03";
 import AvgPriceCard from "../partials/dashboard/AvgPriceCard";
 import ApprovedPriceCard from "../partials/dashboard/ApprovedPriceCard";
