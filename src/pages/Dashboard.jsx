@@ -10,6 +10,7 @@ import AvgPriceCard from "../partials/dashboard/AvgPriceCard";
 import ApprovedPriceCard from "../partials/dashboard/ApprovedPriceCard";
 import FarmerPriceCard from "../partials/dashboard/FarmerPriceCard";
 
+
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -52,6 +53,7 @@ function Dashboard() {
               <AvgPriceCard />
               <ApprovedPriceCard />
               <FarmerPriceCard />
+           
 
               {/* Doughnut chart (Top Countries) */}
               {/* <DashboardCard06 /> */}

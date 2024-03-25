@@ -17,6 +17,9 @@ import Users from "./pages/Users";
 import AccessControl from "./pages/AccessControl";
 import TransactionDetails from "./pages/TransactionDetails";
 import AddUntraceableCoffee from "./pages/AddUntraceableCoffee";
+import AssignedParchment from "./pages/AssignedParchment";
+import GeneralHarvestPage from "./pages/GeneralHarvestPage";
+import SiteHarvestPage from "./pages/SiteHarvestPage";
 import CherryLotDetails from "./pages/CherryLotDetails";
 import SiteDayLotDetails from "./pages/SiteDayLotDetails";
 import LotsInAdayLot from "./pages/LotsInAdayLot";
@@ -82,6 +85,21 @@ function App() {
           exact
           path="/user_transaction/add_untraceable_coffee"
           element={<AddUntraceableCoffee />}
+        />
+          <Route
+          exact
+          path="/user_inventory_management/assigned_parchment"
+          element={<AssignedParchment />}
+        />
+         <Route
+          exact
+          path="/user_registration/general_harvest"
+          element={<GeneralHarvestPage />}
+        />
+         <Route
+          exact
+          path="/user_registration/site_harvest"
+          element={<SiteHarvestPage />}
         />
       </Routes>
     </>

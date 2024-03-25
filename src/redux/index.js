@@ -23,6 +23,8 @@ import transactionBucketSlice from "./slices/transactions/transactionBucketSlice
 import allBucketsSlice from "./slices/transactions/allBucketsSlice";
 import bucketWeightingSlice from "./slices/transactions/bucketWeightingSlice";
 import dryWeightingSlice from "./slices/transactions/dryWeightingSlice";
+import allGeneralHarvestSlice from "./slices/generalHarvest/allGeneralHarvestSlice";
+import allSeasonSlice from "./slices/season/allSeasonSlice";
 const store = configureStore({
   reducer: {
     login,
@@ -43,12 +45,14 @@ const store = configureStore({
     approveJournal: approveJournalSlice,
     fetchAllStations: allStationSlice,
     fetchAllJournalsByCherryLotId: journalsByCherryLotSlice,
-    addPermissions:addPermissionsSlice,
+    addPermissions: addPermissionsSlice,
     fetchAllTransactionsByCherryLot: transactionByCherryLotSlice,
-    transactionBucket:transactionBucketSlice,
-    allBuckets:allBucketsSlice,
-    bucketWeighting:bucketWeightingSlice,
-    dryWeighting:dryWeightingSlice,
+    transactionBucket: transactionBucketSlice,
+    allBuckets: allBucketsSlice,
+    bucketWeighting: bucketWeightingSlice,
+    dryWeighting: dryWeightingSlice,
+    fetchAllGeneralHarvest: allGeneralHarvestSlice,
+    fetchAllSeasons: allSeasonSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
