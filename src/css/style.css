@@ -69,3 +69,12 @@
   /*====================MEDIA QUERIES(STUBBORN SMALL DEVICES)==================*/
   @media screen and (max-width: 575px) {
 }
+
+
+/* Add vertical lines after each column in the table */
+.table-fixed th,
+.table-fixed td {
+  border: 1px solid ; /* Adjust the color as needed */
+}
+
+

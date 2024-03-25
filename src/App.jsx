@@ -23,6 +23,7 @@ import SiteHarvestPage from "./pages/SiteHarvestPage";
 import CherryLotDetails from "./pages/CherryLotDetails";
 import SiteDayLotDetails from "./pages/SiteDayLotDetails";
 import LotsInAdayLot from "./pages/LotsInAdayLot";
+import AssignNewParchment from "./pages/AssignNewParchmentPage";
 
 function App() {
   const location = useLocation();
@@ -101,6 +102,12 @@ function App() {
           path="/user_registration/site_harvest"
           element={<SiteHarvestPage />}
         />
+        <Route
+          exact
+          path="/user_inventory_management/new_parchment_assignement"
+          element={<AssignNewParchment />}
+        />
+         
       </Routes>
     </>
   );

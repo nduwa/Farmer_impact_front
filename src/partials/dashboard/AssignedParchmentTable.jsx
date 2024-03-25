@@ -91,6 +91,15 @@ const AssignedParchmentTable = () => {
           // floaters={50}
         />
       </div>
+      <div>
+        <button
+         className="bg-green-500 text-white p-2 rounded-lg mb-4"
+         onClick={()=>{
+          navigate('/user_inventory_management/new_parchment_assignement')
+         }}
+         
+         > New parchment lot</button>
+      </div>
       <div className="py-4 ml-0 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
         <div className="items-center  justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center mb-4 sm:mb-0">

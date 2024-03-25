@@ -25,6 +25,7 @@ import bucketWeightingSlice from "./slices/transactions/bucketWeightingSlice";
 import dryWeightingSlice from "./slices/transactions/dryWeightingSlice";
 import allGeneralHarvestSlice from "./slices/generalHarvest/allGeneralHarvestSlice";
 import allSeasonSlice from "./slices/season/allSeasonSlice";
+import allDryingsSlice from "./slices/dryings/allDryingsSlice";
 const store = configureStore({
   reducer: {
     login,
@@ -53,6 +54,7 @@ const store = configureStore({
     dryWeighting: dryWeightingSlice,
     fetchAllGeneralHarvest: allGeneralHarvestSlice,
     fetchAllSeasons: allSeasonSlice,
+    fetchAllDrying:allDryingsSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
